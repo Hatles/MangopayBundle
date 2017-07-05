@@ -11,6 +11,10 @@ parameters:
     troopers_mangopay.order.class: Troopers\MangopayBundle\Entity\Order
     troopers_mangopay.form.card: Troopers\MangopayBundle\Form\CardType
 
+    troopers_mangopay.annotation_reader.class: Troopers\MangopayBundle\Listener\MangoPayAnnotationReader
+    troopers_mangopay.handler.class: Troopers\MangopayBundle\Handler\MangoPayHandler
+    troopers_mangopay.subscriber.class: Troopers\MangopayBundle\Listener\MangoPaySubscriber
+
 services:
     troopers_mangopay.mango_api:
         class: "%troopers_mangopay.mango_api.class%"
@@ -77,3 +81,19 @@ services:
         class: "%troopers_mangopay.form.card%"
         tags:
             - { name: form.type }
+
+    troopers_mangopay.annotation_reader:
+        class: "%troopers_mangopay.annotation_reader.class%"
+        arguments: ['@annotations.reader']
+
+    troopers_mangopay.handler:
+        class: "%troopers_mangopay.handler.class%"
+        arguments: ['@troopers_mangopay.user_helper', '@troopers_mangopay.wallet_helper', '@troopers_mangopay.bank_information_helper']
+
+    troopers_mangopay.subscriber:
+        class: "%troopers_mangopay.subscriber.class%"
+        arguments: ['@troopers_mangopay.annotation_reader', '@troopers_mangopay.handler']
+        tags:
+            - { name: doctrine.event_subscriber }
+
+
