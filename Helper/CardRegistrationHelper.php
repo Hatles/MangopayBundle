@@ -26,7 +26,7 @@ class CardRegistrationHelper
     public function createCardRegistrationForUser(UserInterface $user)
     {
         $cardRegistration = new CardRegistration();
-        $cardRegistration->userId = $user->getMangoUserId();
+        $cardRegistration->UserId = $user->getMangoUserId();
         $cardRegistration->Tag = 'user id : '.$user->getId();
         $cardRegistration->Currency = 'EUR';
 

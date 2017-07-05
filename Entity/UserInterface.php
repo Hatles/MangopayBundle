@@ -2,6 +2,9 @@
 
 namespace Troopers\MangopayBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
+use MangoPay\Address;
+
 /**
  * Defines mandatory methods a Mango user should have
  * https://docs.mangopay.com/api-references/users/natural-users/.
@@ -9,63 +12,79 @@ namespace Troopers\MangopayBundle\Entity;
 interface UserInterface
 {
     /**
-     * @var int
+     * @return int
      */
     public function getId();
 
     /**
-     * @var int
+     * @return int
      */
     public function getMangoUserId();
 
     /**
-     * @var int
+     * @param int $userId
      */
-    public function getMangoWalletId();
+    public function setMangoUserId($userId);
 
     /**
-     * @var int
+     * @return Collection
+     */
+    public function getWallets();
+
+    /**
+     * @return int
      */
     public function getCardId();
 
     /**
-     * @var int
+     * @return Collection
      */
-    public function getBankAccountId();
+    public function getBankAccounts();
 
     /**
-     * @var string
+     * @return string
      *             User’s e-mail. A correct email address is expected
      */
     public function getEmail();
 
     /**
-     * @var string
+     * @return string
      *             User’s firstname (<100 chars)
      */
     public function getFirstname();
 
     /**
-     * @var string
+     * @return string
      *             User’s lastname (<100 chars)
      */
     public function getLastname();
 
     /**
-     * @var date
+     * @return string
+     *             User’s fullname
+     */
+    public function getFullName();
+
+    /**
+     * @return \DateTime
      *           User’s birthdate.
      */
     public function getBirthDate();
 
     /**
-     * @var string
+     * @return string
      *             User’s Nationality. ISO 3166-1 alpha-2 format is expected
      */
-    public function getNationality();
+    public function getNationalityCode();
 
     /**
-     * @var string
+     * @return string
      *             User’s country of residence. ISO 3166-1 alpha-2 format is expected
      */
-    public function getCountry();
+    public function getCountryCode();
+
+    /**
+     * @return Address
+     */
+    public function getMangoAddress();
 }

@@ -5,16 +5,36 @@ namespace Troopers\MangopayBundle\Event;
 use MangoPay\Wallet;
 use Symfony\Component\EventDispatcher\Event;
 use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\WalletInterface;
 
 class WalletEvent extends Event
 {
-    private $wallet;
+    /**
+     * @var Wallet
+     */
+    private $mangoWallet;
+
+    /**
+     * @var UserInterface
+     */
     private $user;
 
-    public function __construct(Wallet $wallet, UserInterface $user)
+    /**
+     * @var WalletInterface
+     */
+    private $wallet;
+
+    /**
+     * WalletEvent constructor.
+     * @param Wallet $mangoWallet
+     * @param UserInterface $user
+     * @param WalletInterface $wallet
+     */
+    public function __construct(Wallet $mangoWallet, UserInterface $user, WalletInterface $wallet)
     {
-        $this->wallet = $wallet;
+        $this->mangoWallet = $mangoWallet;
         $this->user = $user;
+        $this->wallet = $wallet;
     }
 
     /**
@@ -22,21 +42,21 @@ class WalletEvent extends Event
      *
      * @return string
      */
-    public function getWallet()
+    public function getMangoWallet()
     {
-        return $this->wallet;
+        return $this->mangoWallet;
     }
 
     /**
      * Set wallet.
      *
-     * @param string $wallet
+     * @param string $mangoWallet
      *
      * @return $this
      */
-    public function setWallet($wallet)
+    public function setMangoWallet($mangoWallet)
     {
-        $this->wallet = $wallet;
+        $this->mangoWallet = $mangoWallet;
 
         return $this;
     }
@@ -44,7 +64,7 @@ class WalletEvent extends Event
     /**
      * Get user.
      *
-     * @return string
+     * @return UserInterface
      */
     public function getUser()
     {
@@ -54,7 +74,7 @@ class WalletEvent extends Event
     /**
      * Set user.
      *
-     * @param string $user
+     * @param UserInterface $user
      *
      * @return $this
      */
@@ -63,5 +83,21 @@ class WalletEvent extends Event
         $this->user = $user;
 
         return $this;
+    }
+
+    /**
+     * @return WalletInterface
+     */
+    public function getWallet()
+    {
+        return $this->wallet;
+    }
+
+    /**
+     * @param WalletInterface $wallet
+     */
+    public function setWallet($wallet)
+    {
+        $this->wallet = $wallet;
     }
 }

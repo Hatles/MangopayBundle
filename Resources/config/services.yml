@@ -1,15 +1,15 @@
 parameters:
-    troopers_mangopay.mango_api.class: "Troopers\\MangopayBundle\\Helper\\MangopayHelper"
-    troopers_mangopay.payment_helper.class: "Troopers\\MangopayBundle\\Helper\\PaymentHelper"
-    troopers_mangopay.card_registration_helper.class: "Troopers\\MangopayBundle\\Helper\\CardRegistrationHelper"
-    troopers_mangopay.payment_direct_helper.class: "Troopers\\MangopayBundle\\Helper\\PaymentDirectHelper"
-    troopers_mangopay.payment_out_helper.class: "Troopers\\MangopayBundle\\Helper\\PaymentOutHelper"
-    troopers_mangopay.bankwire_helper.class: "Troopers\\MangopayBundle\\Helper\\BankwireHelper"
-    troopers_mangopay.user_helper.class: "Troopers\\MangopayBundle\\Helper\\UserHelper"
-    troopers_mangopay.bank_information_helper.class: "Troopers\\MangopayBundle\\Helper\\BankInformationHelper"
-    troopers_mangopay.wallet_helper.class: "Troopers\\MangopayBundle\\Helper\\WalletHelper"
-    troopers_mangopay.order.class: "Troopers\\MangopayBundle\\Entity\\Order"
-    troopers_mangopay.form.card: "Troopers\\MangopayBundle\\Form\\CardType"
+    troopers_mangopay.mango_api.class: Troopers\MangopayBundle\Helper\MangopayHelper
+    troopers_mangopay.payment_helper.class: Troopers\MangopayBundle\Helper\PaymentHelper
+    troopers_mangopay.card_registration_helper.class: Troopers\MangopayBundle\Helper\CardRegistrationHelper
+    troopers_mangopay.payment_direct_helper.class: Troopers\MangopayBundle\Helper\PaymentDirectHelper
+    troopers_mangopay.payment_out_helper.class: Troopers\MangopayBundle\Helper\PaymentOutHelper
+    troopers_mangopay.bankwire_helper.class: Troopers\MangopayBundle\Helper\BankwireHelper
+    troopers_mangopay.user_helper.class: Troopers\MangopayBundle\Helper\UserHelper
+    troopers_mangopay.bank_information_helper.class: Troopers\MangopayBundle\Helper\BankInformationHelper
+    troopers_mangopay.wallet_helper.class: Troopers\MangopayBundle\Helper\WalletHelper
+    troopers_mangopay.order.class: Troopers\MangopayBundle\Entity\Order
+    troopers_mangopay.form.card: Troopers\MangopayBundle\Form\CardType
 
 services:
     troopers_mangopay.mango_api:
@@ -34,6 +34,7 @@ services:
             - "@troopers_mangopay.mango_api"
             - "@doctrine.orm.entity_manager"
             - "@troopers_mangopay.user_helper"
+            - "@event_dispatcher"
     troopers_mangopay.wallet_helper:
         class: "%troopers_mangopay.wallet_helper.class%"
         arguments:
@@ -53,11 +54,12 @@ services:
             - "@troopers_mangopay.mango_api"
             - "@router"
             - "@event_dispatcher"
-
+            - "@translator"
     troopers_mangopay.payment_direct_helper:
         class: "%troopers_mangopay.payment_direct_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
+            - "@troopers_mangopay.wallet_helper"
             - "@router"
             - "@event_dispatcher"
     troopers_mangopay.bankwire_helper:
@@ -69,6 +71,7 @@ services:
         class: "%troopers_mangopay.payment_out_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
+            - "@troopers_mangopay.wallet_helper"
 
     troopers_mangopay.form.card:
         class: "%troopers_mangopay.form.card%"

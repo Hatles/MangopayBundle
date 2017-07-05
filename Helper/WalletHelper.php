@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use MangoPay\Wallet;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\WalletInterface;
 use Troopers\MangopayBundle\Event\WalletEvent;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
 
@@ -14,11 +15,33 @@ use Troopers\MangopayBundle\TroopersMangopayEvents;
  **/
 class WalletHelper
 {
+    /**
+     * @var MangopayHelper
+     */
     private $mangopayHelper;
+
+    /**
+     * @var UserHelper
+     */
     private $userHelper;
+
+    /**
+     * @var EventDispatcherInterface
+     */
     private $dispatcher;
+
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
+    /**
+     * WalletHelper constructor.
+     * @param MangopayHelper $mangopayHelper
+     * @param UserHelper $userHelper
+     * @param EntityManager $entityManager
+     * @param EventDispatcherInterface $dispatcher
+     */
     public function __construct(MangopayHelper $mangopayHelper, UserHelper $userHelper, EntityManager $entityManager, EventDispatcherInterface $dispatcher)
     {
         $this->mangopayHelper = $mangopayHelper;
@@ -30,35 +53,95 @@ class WalletHelper
     /**
      * @param UserInterface $user
      * @param string        $description
+     * @param string        $currency
      *
      * @return Wallet
      */
-    public function findOrCreateWallet(UserInterface $user, $description = 'current wallet')
+    public function findOrCreateWalletWithCurrency(UserInterface $user, $currency, $description = 'current wallet')
     {
-        if ($walletId = $user->getMangoWalletId()) {
-            $wallet = $this->mangopayHelper->Wallets->get($walletId);
-        // else, create a new mango user
-        } else {
-            $wallet = $this->createWalletForUser($user, $description);
+        $walletCur = null;
+
+        foreach ($user->getWallets() as $wallet)
+        {
+            if ($walletId = $wallet->getMangoWalletId()) {
+                $walletTmp = $this->mangopayHelper->Wallets->get($walletId);
+
+                if($walletTmp->Currency == $currency)
+                {
+                    $walletCur = $walletTmp;
+                    break;
+                }
+            }
         }
 
-        return $wallet;
+        if (!$walletCur) {
+            $walletCur = $this->createWalletForUser($user, $currency, $description);
+        }
+
+        return $walletCur;
     }
 
-    public function createWalletForUser(UserInterface $user, $description = 'current wallet')
+    /**
+     * @param WalletInterface $wallet
+     * @return Wallet
+     */
+    public function findOrCreateWallet(WalletInterface $wallet)
+    {
+        if ($walletId = $wallet->getMangoWalletId()) {
+            $mangoWallet = $this->mangopayHelper->Wallets->get($walletId);
+        }
+        else {
+            $mangoWallet = $this->createWallet($wallet);
+        }
+
+        return $mangoWallet;
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param string $currency
+     * @param string $description
+     * @return Wallet
+     */
+    public function createWalletForUser(UserInterface $user, $currency, $description = 'current wallet')
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($user);
         $mangoWallet = new Wallet();
         $mangoWallet->Owners = [$mangoUser->Id];
-        $mangoWallet->Currency = 'EUR';
+        $mangoWallet->Currency = $currency;
         $mangoWallet->Description = $description;
 
         $mangoWallet = $this->mangopayHelper->Wallets->create($mangoWallet);
 
-        $event = new WalletEvent($mangoWallet, $user);
-        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_WALLET, $event);
+        $event = new WalletEvent($mangoWallet, $user, null);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_WALLET_FOR_USER, $event);
 
         $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $mangoWallet;
+    }
+
+    /**
+     * @param WalletInterface $wallet
+     * @return Wallet
+     */
+    public function createWallet(WalletInterface $wallet)
+    {
+        $mangoUser = $this->userHelper->findOrCreateMangoUser($wallet->getUser());
+        $mangoWallet = new Wallet();
+        $mangoWallet->Owners = [$mangoUser->Id];
+        $mangoWallet->Currency = $wallet->getCurrencyCode();
+        $mangoWallet->Description = $wallet->getDescription();
+
+        $mangoWallet = $this->mangopayHelper->Wallets->create($mangoWallet);
+
+        $wallet->setMangoWalletId($mangoWallet->Id);
+
+        $event = new WalletEvent($mangoWallet, $wallet->getUser(), $wallet);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_WALLET, $event);
+
+        $this->entityManager->persist($wallet);
         $this->entityManager->flush();
 
         return $mangoWallet;

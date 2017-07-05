@@ -6,24 +6,51 @@ use Doctrine\ORM\EntityManager;
 use MangoPay\BankAccount;
 use MangoPay\BankAccountDetailsIBAN;
 use MangoPay\User;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Event\BankInformationEvent;
+use Troopers\MangopayBundle\TroopersMangopayEvents;
 
 /**
  * ref: troopers_mangopay.bank_information_helper.
  **/
 class BankInformationHelper
 {
+    /**
+     * @var MangopayHelper
+     */
     private $mangopayHelper;
+
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
+
+    /**
+     * @var UserHelper
+     */
     private $userHelper;
 
-    public function __construct(MangopayHelper $mangopayHelper, EntityManager $entityManager, UserHelper $userHelper)
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    /**
+     * BankInformationHelper constructor.
+     * @param MangopayHelper $mangopayHelper
+     * @param EntityManager $entityManager
+     * @param UserHelper $userHelper
+     * @param EventDispatcherInterface $dispatcher
+     */
+    public function __construct(MangopayHelper $mangopayHelper, EntityManager $entityManager, UserHelper $userHelper, EventDispatcherInterface $dispatcher)
     {
         $this->mangopayHelper = $mangopayHelper;
         $this->userHelper = $userHelper;
         $this->entityManager = $entityManager;
+        $this->dispatcher = $dispatcher;
     }
 
     public function findOrCreateBankAccount(BankInformationInterface $bankInformation)
@@ -45,7 +72,7 @@ class BankInformationHelper
         $bankAccount->OwnerName = $bankInformation->getUser()->getFullName();
         $bankAccount->UserId = $mangoUser->Id;
         $bankAccount->Type = 'IBAN';
-        $bankAccount->OwnerAddress = $bankInformation->getAddress();
+        $bankAccount->OwnerAddress = $bankInformation->getMangoAddress();
 
         $bankAccountDetailsIban = new BankAccountDetailsIBAN();
         $bankAccountDetailsIban->IBAN = $bankInformation->getIban();
@@ -56,6 +83,9 @@ class BankInformationHelper
 
         $bankInformation->setMangoBankAccountId($bankAccount->Id);
 
+        $event = new BankInformationEvent($bankAccount, $bankInformation->getUser(), $bankInformation);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_BANKINFORMATION, $event);
+
         $this->entityManager->persist($bankInformation);
         $this->entityManager->flush();
 
@@ -64,44 +94,26 @@ class BankInformationHelper
 
     public function createBankAccountForUser(UserInterface $user, $iban)
     {
-        $bankAccount = new \MangoPay\BankAccount();
-        $bankAccount->OwnerName = $this->getUserFullName($user);
+        $bankAccount = new BankAccount();
+        $bankAccount->OwnerName = $user->getFullName();
         $bankAccount->UserId = $user->getMangoUserId();
         $bankAccount->Type = 'IBAN';
 
-        $address = new \MangoPay\Address();
-        $userAddress = $user->getAddress();
-        $city = $user->getCity();
-        $postalCode = $user->getPostalCode();
-        if (null == $userAddress || null == $city || null == $postalCode) {
-            throw new NotFoundHttpException(sprintf('address, city or postalCode missing for User id : %s', $user->getId()));
-        }
-        $address->AddressLine1 = $userAddress;
-        $address->City = $city;
-        $address->Country = $user->getCountry();
-        $address->PostalCode = $postalCode;
-        $bankAccount->OwnerAddress = $address;
+        $bankAccount->OwnerAddress = $user->getMangoAddress();
 
-        $bankAccountDetailsIban = new \MangoPay\BankAccountDetailsIBAN();
+        $bankAccountDetailsIban = new BankAccountDetailsIBAN();
         $bankAccountDetailsIban->IBAN = $iban;
 
         $bankAccount->Details = $bankAccountDetailsIban;
 
-        return $this->mangopayHelper->Users->CreateBankAccount($user->getMangoUserId(), $bankAccount);
-    }
+        $bankAccount = $this->mangopayHelper->Users->CreateBankAccount($user->getMangoUserId(), $bankAccount);
 
-    /**
-     * Implode Users's full name with firstName and lastName.
-     *
-     * @param User $user
-     *
-     * @return string
-     */
-    public function getUserFullName(UserInterface $user)
-    {
-        $firstName = $user->getFirstName();
-        $lastName = $user->getLastName();
+        $event = new BankInformationEvent($bankAccount, $user, null);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_BANKINFORMATION_FOR_USER, $event);
 
-        return $firstName.' '.$lastName;
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $bankAccount;
     }
 }

@@ -11,7 +11,9 @@ use MangoPay\PayInPaymentDetailsPreAuthorized;
 use MangoPay\User;
 use MangoPay\Wallet;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Translation\DataCollectorTranslator;
 use Troopers\MangopayBundle\Entity\CardPreAuthorisation;
 use Troopers\MangopayBundle\Entity\Order;
 use Troopers\MangopayBundle\Entity\UserInterface;
@@ -29,12 +31,14 @@ class PaymentHelper
     protected $mangopayHelper;
     protected $router;
     protected $dispatcher;
+    protected $translator;
 
-    public function __construct(MangopayHelper $mangopayHelper, Router $router, EventDispatcherInterface $dispatcher)
+    public function __construct(MangopayHelper $mangopayHelper, Router $router, EventDispatcherInterface $dispatcher, DataCollectorTranslator $translator)
     {
         $this->mangopayHelper = $mangopayHelper;
         $this->router = $router;
         $this->dispatcher = $dispatcher;
+        $this->translator = $translator;
     }
 
     public function prepareCardRegistrationCallback(User $user, Order $order)
@@ -130,12 +134,13 @@ class PaymentHelper
      * execute a pre authorisation.
      *
      * @param CardPreAuthorisation $preAuthorisation
-     * @param UserInterface        $buyer
-     * @param Wallet               $wallet
-     * @param int                  $feesAmount
-     * @param int                  $amount           0 to 100
-     *
+     * @param UserInterface $buyer
+     * @param Wallet $wallet
+     * @param int $feesAmount
+     * @param int $amount 0 to 100
      * @return PayIn
+     *
+     * @throws MangopayPayInCreationException
      */
     public function executePreAuthorisation(
         CardPreAuthorisation $preAuthorisation,

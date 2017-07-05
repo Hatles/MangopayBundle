@@ -15,6 +15,21 @@ final class TroopersMangopayEvents
     const NEW_WALLET = 'troopers_mangopay.wallet.new';
 
     /**
+     * The NEW_WALLET_FOR_USER event occurs when a wallet is created for a User.
+     */
+    const NEW_WALLET_FOR_USER = 'troopers_mangopay.wallet.new_for_user';
+
+    /**
+     * The NEW_BANKINFORMATION event occurs when a bank information is created.
+     */
+    const NEW_BANKINFORMATION = 'troopers_mangopay.bank_information.new';
+
+    /**
+     * The NEW_BANKINFORMATION_FOR_USER event occurs when a bank information is created for a User.
+     */
+    const NEW_BANKINFORMATION_FOR_USER = 'troopers_mangopay.bank_information.new_for_user';
+
+    /**
      * The NEW_CARD_PREAUTHORISATION event occurs when a card preauthorisation is created.
      */
     const NEW_CARD_PREAUTHORISATION = 'troopers_mangopay.card.preauthorisation.new';

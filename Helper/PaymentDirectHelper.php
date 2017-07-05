@@ -4,6 +4,8 @@ namespace Troopers\MangopayBundle\Helper;
 
 use MangoPay\Money;
 use MangoPay\PayIn;
+use MangoPay\PayInExecutionDetailsDirect;
+use MangoPay\PayInPaymentDetailsCard;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -17,19 +19,25 @@ use Troopers\MangopayBundle\Entity\UserInterface;
 class PaymentDirectHelper
 {
     private $mangopayHelper;
+    private $walletHelper;
     private $router;
     private $dispatcher;
 
-    public function __construct(MangopayHelper $mangopayHelper, Router $router, EventDispatcherInterface $dispatcher)
+    public function __construct(MangopayHelper $mangopayHelper, WalletHelper $walletHelper, Router $router, EventDispatcherInterface $dispatcher)
     {
         $this->mangopayHelper = $mangopayHelper;
+        $this->walletHelper = $walletHelper;
         $this->router = $router;
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * @param UserInterface $user
+     * @return PayInPaymentDetailsCard
+     */
     public function buildPayInPaymentDetailsCard(UserInterface $user)
     {
-        $paymentDetails = new \MangoPay\PayInPaymentDetailsCard();
+        $paymentDetails = new PayInPaymentDetailsCard();
         $paymentDetails->CardType = 'CB_VISA_MASTERCARD';
         if (null === $cardId = $user->getCardId()) {
             throw new NotFoundHttpException(sprintf('CardId not found for user id : %s', $user->getId()));
@@ -39,26 +47,46 @@ class PaymentDirectHelper
         return $paymentDetails;
     }
 
+    /**
+     * @param $secureModeReturnURL
+     * @return PayInExecutionDetailsDirect
+     */
     public function buildPayInExecutionDetailsDirect($secureModeReturnURL)
     {
-        $executionDetails = new \MangoPay\PayInExecutionDetailsDirect();
+        $executionDetails = new PayInExecutionDetailsDirect();
         $executionDetails->SecureModeReturnURL = $secureModeReturnURL;
 
         return $executionDetails;
     }
 
-    public function buildTransaction(UserInterface $userDebited, UserInterface $userCredited, $amount, $fees)
+    /**
+     * @param UserInterface $userDebited
+     * @param UserInterface $userCredited
+     * @param $amount
+     * @param $fees
+     * @return Transaction
+     */
+    public function buildTransaction(UserInterface $userDebited, UserInterface $userCredited, $currency, $amount, $fees)
     {
         $transaction = new Transaction();
         $transaction->setAuthorId($userDebited->getMangoUserId());
         $transaction->setCreditedUserId($userCredited->getMangoUserId());
         $transaction->setDebitedFunds($amount);
         $transaction->setFees($fees);
-        $transaction->setCreditedWalletId($userCredited->getMangoWalletId());
+        $transaction->setCreditedWalletId($this->walletHelper->findOrCreateWalletWithCurrency($userCredited, $currency)->Id);
 
         return $transaction;
     }
 
+    /**
+     * @param UserInterface $userDebited
+     * @param UserInterface $userCredited
+     * @param $amount
+     * @param $fees
+     * @param null $secureModeReturnURL
+     * @param null $payInTag
+     * @return PayIn
+     */
     public function executeDirectTransaction(
         UserInterface $userDebited,
         UserInterface $userCredited,
