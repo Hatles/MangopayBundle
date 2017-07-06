@@ -38,7 +38,8 @@ class KycHelper
     public function findOrCreateKycDocument(KycDocumentInterface $kycDocument)
     {
         if ($documentId = $kycDocument->getKycDocumentId()) {
-            $mangoDocument = $this->mangopayHelper->KycDocuments->Get($documentId);
+            $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
+            $mangoDocument = $this->mangopayHelper->Users->GetKycDocument($mangoUser->Id, $documentId);
         }
         else {
             $mangoDocument = $this->createKycDocument($kycDocument);
