@@ -20,6 +20,26 @@ final class TroopersMangopayEvents
     const NEW_WALLET_FOR_USER = 'troopers_mangopay.wallet.new_for_user';
 
     /**
+     * The NEW_KYCPAGE event occurs when a kyc page is created.
+     */
+    const NEW_KYCPAGE = 'troopers_mangopay.kyc_page.new';
+
+    /**
+     * The NEW_KYCDOCUMENT event occurs when a kyc document is created.
+     */
+    const NEW_KYCDOCUMENT = 'troopers_mangopay.kyc_document.new';
+
+    /**
+     * The NEW_KYCDOCUMENT_FOR_USER event occurs when a kyc document is created for a User.
+     */
+    const NEW_KYCDOCUMENT_FOR_USER = 'troopers_mangopay.kyc_document.new_for_user';
+
+    /**
+     * The ASK_VALIDATION_KYCDOCUMENT event occurs when a kyc document validation is asked.
+     */
+    const ASK_VALIDATION_KYCDOCUMENT = 'troopers_mangopay.kyc_document.ask_validation';
+
+    /**
      * The NEW_BANKINFORMATION event occurs when a bank information is created.
      */
     const NEW_BANKINFORMATION = 'troopers_mangopay.bank_information.new';
