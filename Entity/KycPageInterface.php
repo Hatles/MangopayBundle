@@ -15,5 +15,5 @@ interface KycPageInterface
      * @return string
      *      The base64 encoded file which needs to be uploaded
      */
-    public function getFile();
+    public function getFileBase64();
 }

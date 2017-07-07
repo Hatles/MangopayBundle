@@ -6,7 +6,7 @@
  * Time: 14:36
  */
 
-namespace Troopers\MangopayBundle\Listener;
+namespace Troopers\MangopayBundle\Annotation;
 
 
 use Doctrine\Common\Annotations\AnnotationReader;

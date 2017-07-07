@@ -8,10 +8,9 @@
 
 namespace Troopers\MangopayBundle\Listener;
 
-
-use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Troopers\MangopayBundle\Annotation\MangoPayAnnotationReader;
 use Troopers\MangopayBundle\Handler\MangoPayHandler;
 
 class MangoPaySubscriber implements EventSubscriber

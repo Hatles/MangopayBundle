@@ -8,6 +8,7 @@
 
 namespace Troopers\MangopayBundle\Handler;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
@@ -21,19 +22,12 @@ class MangoPayHandler
 {
     private $accessor;
 
-    /**
-     * @var UserHelper $userHelper
-     */
-    private $userHelper;
-    private $walletHelper;
-    private $bankInformationHelper;
+    private $container;
 
-    public function __construct(UserHelper $userHelper, WalletHelper $walletHelper, BankInformationHelper $bankInformationHelper) {
+    public function __construct(ContainerInterface $container) {
         $this->accessor = PropertyAccess::createPropertyAccessor();
 
-        $this->userHelper = $userHelper;
-        $this->walletHelper = $walletHelper;
-        $this->bankInformationHelper = $bankInformationHelper;
+        $this->container = $container;
     }
 
     /**
@@ -82,11 +76,11 @@ class MangoPayHandler
     {
         switch(true) {
             case $entity instanceof UserInterface:
-                return $this->userHelper->findOrCreateMangoUser($entity);
+                return $this->container->get('troopers_mangopay.user_helper')->findOrCreateMangoUser($entity);
             case $entity instanceof WalletInterface:
-                return $this->walletHelper->findOrCreateWallet($entity);
+                return $this->container->get('troopers_mangopay.wallet_helper')->findOrCreateWallet($entity);
             case $entity instanceof BankInformationInterface:
-                return $this->bankInformationHelper->findOrCreateBankAccount($entity);
+                return $this->container->get('troopers_mangopay.bank_information_helper')->findOrCreateBankAccount($entity);
         }
 
         throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
