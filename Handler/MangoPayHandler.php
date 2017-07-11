@@ -84,5 +84,19 @@ class MangoPayHandler
         }
 
         throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
-}
+    }
+
+    public function prePersistOrUpdateMangoPayEntity($entity)
+    {
+        switch(true) {
+            case $entity instanceof UserInterface:
+                return $this->container->get('troopers_mangopay.user_helper')->updateOrPersistMangoUser($entity);
+            case $entity instanceof WalletInterface:
+                return $this->container->get('troopers_mangopay.wallet_helper')->updateOrPersistWallet($entity);
+            case $entity instanceof BankInformationInterface:
+                return $this->container->get('troopers_mangopay.bank_information_helper')->updateOrPersistBankAccount($entity);
+        }
+
+        throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
+    }
 }

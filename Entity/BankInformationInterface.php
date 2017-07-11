@@ -33,6 +33,12 @@ interface BankInformationInterface
     public function getMangoAddress();
 
     /**
+     *
+     * @return string
+     */
+    public function getOwnerName();
+
+    /**
      * It represents the amount debited on the bank account of the Author.In cents so 100€ will be written like « Amount » : 10000
      * DebitedFunds – Fees = CreditedFunds (amount received on wallet).
      *

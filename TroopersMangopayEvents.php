@@ -15,6 +15,11 @@ final class TroopersMangopayEvents
     const NEW_WALLET = 'troopers_mangopay.wallet.new';
 
     /**
+     * The UPDATE_WALLET event occurs when a wallet is updated.
+     */
+    const UPDATE_WALLET = 'troopers_mangopay.wallet.update';
+
+    /**
      * The NEW_WALLET_FOR_USER event occurs when a wallet is created for a User.
      */
     const NEW_WALLET_FOR_USER = 'troopers_mangopay.wallet.new_for_user';
@@ -43,6 +48,11 @@ final class TroopersMangopayEvents
      * The NEW_BANKINFORMATION event occurs when a bank information is created.
      */
     const NEW_BANKINFORMATION = 'troopers_mangopay.bank_information.new';
+
+    /**
+     * The UPDATE_BANKINFORMATION event occurs when a bank information is updated.
+     */
+    const UPDATE_BANKINFORMATION = 'troopers_mangopay.bank_information.update';
 
     /**
      * The NEW_BANKINFORMATION_FOR_USER event occurs when a bank information is created for a User.

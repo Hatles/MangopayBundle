@@ -124,9 +124,10 @@ class WalletHelper
 
     /**
      * @param WalletInterface $wallet
+     * @param bool $inLiveCycleCallback
      * @return Wallet
      */
-    public function createWallet(WalletInterface $wallet)
+    public function createWallet(WalletInterface $wallet, $inLiveCycleCallback = false)
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($wallet->getUser());
         $mangoWallet = new Wallet();
@@ -141,10 +142,56 @@ class WalletHelper
         $event = new WalletEvent($mangoWallet, $wallet->getUser(), $wallet);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_WALLET, $event);
 
-        $this->entityManager->persist($wallet);
-        $this->entityManager->flush();
+        if(!$inLiveCycleCallback) {
+            $this->entityManager->persist($wallet);
+            $this->entityManager->flush();
+        }
 
         return $mangoWallet;
+    }
+
+    /**
+     * @param WalletInterface $wallet
+     * @param bool $inLiveCycleCallback
+     * @return Wallet
+     */
+    public function updateWallet(WalletInterface $wallet, $inLiveCycleCallback = false)
+    {
+        $mangoUser = $this->userHelper->findOrCreateMangoUser($wallet->getUser());
+
+        $mangoWalletID = $wallet->getMangoWalletId();
+        $mangoWallet = $this->mangopayHelper->Wallets->Get($mangoWalletID);
+        $mangoWallet->Owners = [$mangoUser->Id];
+        $mangoWallet->Currency = $wallet->getCurrencyCode();
+        $mangoWallet->Description = $wallet->getDescription();
+
+        $mangoWallet = $this->mangopayHelper->Wallets->Update($mangoWallet);
+
+        $event = new WalletEvent($mangoWallet, $wallet->getUser(), $wallet);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::UPDATE_WALLET, $event);
+
+        if(!$inLiveCycleCallback) {
+            $this->entityManager->persist($wallet);
+            $this->entityManager->flush();
+        }
+
+        return $mangoWallet;
+    }
+
+    /**
+     * @param WalletInterface $wallet
+     * @return \MangoPay\Wallet
+     */
+    public function updateOrPersistWallet(WalletInterface $wallet)
+    {
+        if(!$wallet->getMangoWalletId())
+        {
+            return $this->createWallet($wallet, true);
+        }
+        else
+        {
+            return $this->updateWallet($wallet, true);
+        }
     }
 
     public function getTransactions($walletId)

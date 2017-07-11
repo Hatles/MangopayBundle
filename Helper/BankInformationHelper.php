@@ -64,12 +64,12 @@ class BankInformationHelper
         return $mangoBankAccount;
     }
 
-    public function createBankAccount(BankInformationInterface $bankInformation)
+    public function createBankAccount(BankInformationInterface $bankInformation, $inLiveCycleCallback = false)
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($bankInformation->getUser());
         //Create mango bank account
         $bankAccount = new BankAccount();
-        $bankAccount->OwnerName = $bankInformation->getUser()->getFullName();
+        $bankAccount->OwnerName = $bankInformation->getOwnerName();
         $bankAccount->UserId = $mangoUser->Id;
         $bankAccount->Type = 'IBAN';
         $bankAccount->OwnerAddress = $bankInformation->getMangoAddress();
@@ -79,24 +79,28 @@ class BankInformationHelper
 
         $bankAccount->Details = $bankAccountDetailsIban;
 
-        $bankAccount = $this->mangopayHelper->Users->CreateBankAccount($bankInformation->getUser()->getMangoUserId(), $bankAccount);
+        $bankAccount = $this->mangopayHelper->Users->CreateBankAccount($mangoUser->Id, $bankAccount);
 
         $bankInformation->setMangoBankAccountId($bankAccount->Id);
 
         $event = new BankInformationEvent($bankAccount, $bankInformation->getUser(), $bankInformation);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_BANKINFORMATION, $event);
 
-        $this->entityManager->persist($bankInformation);
-        $this->entityManager->flush();
+        if(!$inLiveCycleCallback) {
+            $this->entityManager->persist($bankInformation);
+            $this->entityManager->flush();
+        }
 
         return $bankAccount;
     }
 
     public function createBankAccountForUser(UserInterface $user, $iban)
     {
+        $mangoUser = $this->userHelper->findOrCreateMangoUser($user);
+
         $bankAccount = new BankAccount();
         $bankAccount->OwnerName = $user->getFullName();
-        $bankAccount->UserId = $user->getMangoUserId();
+        $bankAccount->UserId = $mangoUser->Id;
         $bankAccount->Type = 'IBAN';
 
         $bankAccount->OwnerAddress = $user->getMangoAddress();
@@ -104,15 +108,63 @@ class BankInformationHelper
         $bankAccountDetailsIban = new BankAccountDetailsIBAN();
         $bankAccountDetailsIban->IBAN = $iban;
 
+
         $bankAccount->Details = $bankAccountDetailsIban;
 
-        $bankAccount = $this->mangopayHelper->Users->CreateBankAccount($user->getMangoUserId(), $bankAccount);
+        $bankAccount = $this->mangopayHelper->Users->CreateBankAccount($mangoUser->Id, $bankAccount);
 
         $event = new BankInformationEvent($bankAccount, $user, null);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_BANKINFORMATION_FOR_USER, $event);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+
+        return $bankAccount;
+    }
+
+    /**
+     * @param BankInformationInterface $bankInformation
+     * @return BankAccount
+     */
+    public function updateOrPersistBankAccount(BankInformationInterface $bankInformation)
+    {
+        if(!$bankInformation->getMangoBankAccountId())
+        {
+            return $this->createBankAccount($bankInformation, true);
+        }
+        else
+        {
+            return $this->updateBankAccount($bankInformation, true);
+        }
+    }
+
+
+    private function updateBankAccount(BankInformationInterface $bankInformation, $inLiveCycleCallback = false)
+    {
+        $mangoUser = $this->userHelper->findOrCreateMangoUser($bankInformation->getUser());
+
+
+        $bankAccountId = $bankInformation->getMangoBankAccountId();
+        $bankAccount = $this->mangopayHelper->Users->GetBankAccount($mangoUser->Id, $bankAccountId);
+        $bankAccount->OwnerName = $bankInformation->getOwnerName();
+        $bankAccount->UserId = $mangoUser->Id;
+        $bankAccount->Type = 'IBAN';
+        $bankAccount->OwnerAddress = $bankInformation->getMangoAddress();
+
+        $bankAccountDetailsIban = new BankAccountDetailsIBAN();
+        $bankAccountDetailsIban->IBAN = $bankInformation->getIban();
+
+        $bankAccount->Details = $bankAccountDetailsIban;
+
+        $bankAccount = $this->mangopayHelper->Users->UpdateBankAccount($mangoUser->Id, $bankAccount);
+
+        $event = new BankInformationEvent($bankAccount, $bankInformation->getUser(), $bankInformation);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::UPDATE_BANKINFORMATION, $event);
+
+        if(!$inLiveCycleCallback) {
+            $this->entityManager->persist($bankInformation);
+            $this->entityManager->flush();
+        }
 
         return $bankAccount;
     }

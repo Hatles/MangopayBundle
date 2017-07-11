@@ -28,6 +28,7 @@ class UserHelper
 
     /**
      * @param UserInterface $user
+     * @param bool $inLiveCycleCallback
      * @return \MangoPay\UserLegal|UserNatural
      */
     public function findOrCreateMangoUser(UserInterface $user)
@@ -43,9 +44,10 @@ class UserHelper
 
     /**
      * @param UserInterface $user
+     * @param bool $inLiveCycleCallback
      * @return \MangoPay\UserLegal|UserNatural
      */
-    public function createMangoUser(UserInterface $user)
+    public function createMangoUser(UserInterface $user, $inLiveCycleCallback = false)
     {
         $birthdate = null;
         if ($user->getBirthDate() instanceof \Datetime) {
@@ -67,17 +69,20 @@ class UserHelper
         $event = new UserEvent($user, $mangoUser);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_USER, $event);
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        if(!$inLiveCycleCallback) {
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+        }
 
         return $mangoUser;
     }
 
     /**
      * @param UserInterface $user
+     * @param bool $inLiveCycleCallback
      * @return \MangoPay\UserLegal|UserNatural
      */
-    public function updateMangoUser(UserInterface $user)
+    public function updateMangoUser(UserInterface $user, $inLiveCycleCallback = false)
     {
         $birthdate = null;
         if ($user->getBirthDate() instanceof \Datetime) {
@@ -98,10 +103,29 @@ class UserHelper
 
         $mangoUser = $this->mangopayHelper->Users->Update($mangoUser);
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        if(!$inLiveCycleCallback)
+        {
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+        }
 
         return $mangoUser;
+    }
+
+    /**
+     * @param UserInterface $user
+     * @return \MangoPay\UserLegal|UserNatural
+     */
+    public function updateOrPersistMangoUser(UserInterface $user)
+    {
+        if(!$user->getId() or !$user->getMangoUserId())
+        {
+            return $this->createMangoUser($user, true);
+        }
+        else
+        {
+            return $this->updateMangoUser($user, true);
+        }
     }
 
     public function getTransactions($userId)
