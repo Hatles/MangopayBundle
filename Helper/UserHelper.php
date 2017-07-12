@@ -49,15 +49,15 @@ class UserHelper
      */
     public function createMangoUser(UserInterface $user, $inLiveCycleCallback = false)
     {
-        $birthdate = null;
+        $birthday = null;
         if ($user->getBirthDate() instanceof \Datetime) {
-            $birthdate = $user->getBirthDate()->getTimestamp();
+            $birthday = $user->getBirthDay()->getTimestamp();
         }
         $mangoUser = new UserNatural();
         $mangoUser->Email = $user->getEmail();
         $mangoUser->FirstName = $user->getFirstname();
         $mangoUser->LastName = $user->getLastname();
-        $mangoUser->Birthday = $birthdate;
+        $mangoUser->Birthday = $birthday;
         $mangoUser->Nationality = $user->getNationalityCode();
         $mangoUser->CountryOfResidence = $user->getCountryCode();
         $mangoUser->Tag = $user->getId();
@@ -84,9 +84,9 @@ class UserHelper
      */
     public function updateMangoUser(UserInterface $user, $inLiveCycleCallback = false)
     {
-        $birthdate = null;
+        $birthday = null;
         if ($user->getBirthDate() instanceof \Datetime) {
-            $birthdate = $user->getBirthDate()->getTimestamp();
+            $birthday = $user->getBirthDay()->getTimestamp();
         }
         $mangoUserId = $user->getMangoUserId();
         $mangoUser = $this->mangopayHelper->Users->get($mangoUserId);
@@ -94,7 +94,7 @@ class UserHelper
         $mangoUser->Email = $user->getEmail();
         $mangoUser->FirstName = $user->getFirstname();
         $mangoUser->LastName = $user->getLastname();
-        $mangoUser->Birthday = $birthdate;
+        $mangoUser->Birthday = $birthday;
         $mangoUser->Nationality = $user->getNationalityCode();
         $mangoUser->CountryOfResidence = $user->getCountryCode();
         $mangoUser->Tag = $user->getId();

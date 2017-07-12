@@ -67,9 +67,9 @@ interface UserInterface
 
     /**
      * @return \DateTime
-     *           User’s birthdate.
+     *           User’s birthday.
      */
-    public function getBirthDate();
+    public function getBirthDay();
 
     /**
      * @return string
