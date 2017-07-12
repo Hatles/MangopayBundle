@@ -38,7 +38,7 @@ class MangoPayHandler
      */
     public function setFieldFromMangoPayEntity($entity, $property, $mangoEntity, MangoPayField $annotationField)
     {
-        $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($mangoEntity, $annotationField));
+        $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
     }
 
     public function disableEntity($entity, $property)
@@ -47,13 +47,14 @@ class MangoPayHandler
     }
 
     /**
+     * @param string $property
      * @param object|array $mangoEntity
      * @param MangoPayField $annotationField
-     * @return mixed;
+     * @return mixed|null ;
      */
-    private function getValueFromMangoPayEntity($mangoEntity, MangoPayField $annotationField)
+    private function getValueFromMangoPayEntity($property, $mangoEntity, MangoPayField $annotationField)
     {
-        $property = $annotationField->getName();
+        $mangoProperty = $annotationField->getName() ?: $property;
 
         if(property_exists($mangoEntity, $property))
         {

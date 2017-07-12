@@ -10,6 +10,7 @@ namespace Troopers\MangopayBundle\Controller;
 
 
 use MLC\UserBundle\Entity\LegalUser;
+use MLC\UserBundle\Form\Type\LegalUserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -29,16 +30,18 @@ class TestController extends Controller
      */
     public function newMangoUserAction(Request $request)
     {
-//        $em = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
 
         $user = new LegalUser();
         $form = $this->createForm(LegalUserType::class, $user);
-        $form->add(SubmitType::class);
+        $form->add('submit', SubmitType::class);
 
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $em->persist($user);
+            $em->flush();
+            $this->addFlash('success', 'New User Added');
+            dump($user);
         }
 
         return $this->render('TroopersMangopayBundle:Test:new_mango_user.html.twig', array(

@@ -5,7 +5,15 @@
     <title>New Mango User</title>
 </head>
 <body>
+    {% if app.session is not null and app.session.started %}
+        {% for label, messages in app.session.flashbag.all %}
+            {% for message in messages %}
+                <div class="flash-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
     {{ form(form) }}
-    {{ path('') }}
 </body>
 </html>

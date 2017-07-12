@@ -28,6 +28,7 @@ class TroopersMangopayExtension extends Extension
         $container->setParameter('troopers_mangopay.debug_mode', $config['debug_mode'] === true);
         $container->setParameter('troopers_mangopay.client_id', $config['client_id']);
         $container->setParameter('troopers_mangopay.client_password', $config['client_password']);
-        $container->setParameter('troopers_mangopay.base_url', $config['base_url']);
+
+        $container->setParameter('troopers_mangopay.base_url', array_key_exists('base_url', $config) ? $config['base_url'] : null);
     }
 }

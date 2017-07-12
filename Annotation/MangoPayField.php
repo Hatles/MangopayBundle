@@ -26,10 +26,12 @@ class MangoPayField
     public function __construct(array $options)
     {
         if (empty($options['name'])) {
-            throw new \InvalidArgumentException("L'annotation MangoPayField doit avoir un attribut 'name'");
+            $this->name = "";
         }
-
-        $this->name = $options['name'];
+        else
+        {
+            $this->name = $options['name'];
+        }
     }
 
     /**

@@ -4,8 +4,11 @@ namespace Troopers\MangopayBundle\Controller;
 
 use MangoPay\CardRegistration;
 use MangoPay\PayIn;
+use MLC\UserBundle\Entity\LegalUser;
+use MLC\UserBundle\Form\Type\LegalUserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Troopers\MangopayBundle\Entity\Order;

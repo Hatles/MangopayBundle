@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('debug_mode')->defaultValue(false)->end()
                 ->scalarNode('client_id')->isRequired()->end()
                 ->scalarNode('client_password')->isRequired()->end()
-                ->scalarNode('base_url')->isRequired()->end()
+                ->scalarNode('base_url')->end()
             ->end();
 
         return $treeBuilder;
