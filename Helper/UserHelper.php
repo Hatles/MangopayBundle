@@ -31,11 +31,13 @@ class UserHelper
      * @param bool $inLiveCycleCallback
      * @return \MangoPay\UserLegal|UserNatural
      */
-    public function findOrCreateMangoUser(UserInterface $user)
+    public function findOrCreateMangoUser(UserInterface $user, $inLiveCycleCallback = false)
     {
+        $mangoUser = null;
+
         if ($mangoUserId = $user->getMangoUserId()) {
             $mangoUser = $this->mangopayHelper->Users->get($mangoUserId);
-        } else {
+        } elseif(!$inLiveCycleCallback) {
             $mangoUser = $this->createMangoUser($user);
         }
 

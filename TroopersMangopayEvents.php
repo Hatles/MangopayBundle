@@ -55,6 +55,11 @@ final class TroopersMangopayEvents
     const UPDATE_BANKINFORMATION = 'troopers_mangopay.bank_information.update';
 
     /**
+     * The DISABLE_BANKINFORMATION event occurs when a bank information is deleted.
+     */
+    const DISABLE_BANKINFORMATION = 'troopers_mangopay.bank_information.disabled';
+
+    /**
      * The NEW_BANKINFORMATION_FOR_USER event occurs when a bank information is created for a User.
      */
     const NEW_BANKINFORMATION_FOR_USER = 'troopers_mangopay.bank_information.new_for_user';

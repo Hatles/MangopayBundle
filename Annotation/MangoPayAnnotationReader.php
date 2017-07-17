@@ -9,7 +9,9 @@
 namespace Troopers\MangopayBundle\Annotation;
 
 
+use Application\Sonata\ClassificationBundle\Entity\Collection;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Collections\ArrayCollection;
 use Troopers\MangopayBundle\Annotation\MangoPayEntity;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 
@@ -20,9 +22,33 @@ class MangoPayAnnotationReader
      */
     private $reader;
 
+    /**
+     * @var Collection
+     */
+    private $linkedEntities;
+
     public function __construct(AnnotationReader $reader)
     {
         $this->reader = $reader;
+        $this->linkedEntities = new ArrayCollection();
+    }
+
+
+    /**
+     * @param $entity
+     * @return bool
+     */
+    public function isLinkedToMangoPayEntity($entity)
+    {
+        return $this->linkedEntities->contains($entity);
+    }
+
+    /**
+     * @param object $entity
+     */
+    public function addLinkedEntity($entity)
+    {
+        $this->linkedEntities->add($entity);
     }
 
     public function isMangoPayEntity($entity)

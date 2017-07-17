@@ -83,14 +83,17 @@ class WalletHelper
 
     /**
      * @param WalletInterface $wallet
-     * @return Wallet
+     * @param bool $inLiveCycleCallback
+     * @return Wallet|null
      */
-    public function findOrCreateWallet(WalletInterface $wallet)
+    public function findOrCreateWallet(WalletInterface $wallet, $inLiveCycleCallback = false)
     {
+        $mangoWallet = null;
+
         if ($walletId = $wallet->getMangoWalletId()) {
             $mangoWallet = $this->mangopayHelper->Wallets->get($walletId);
         }
-        else {
+        elseif(!$inLiveCycleCallback) {
             $mangoWallet = $this->createWallet($wallet);
         }
 

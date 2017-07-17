@@ -96,4 +96,7 @@ services:
         tags:
             - { name: doctrine.event_subscriber }
 
-
+    troopers_mangopay.exception_listener:
+        class: Troopers\MangopayBundle\Listener\MangoPayExceptionListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
