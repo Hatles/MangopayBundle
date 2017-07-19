@@ -32,6 +32,7 @@ services:
             - "@troopers_mangopay.mango_api"
             - "@doctrine.orm.entity_manager"
             - "@event_dispatcher"
+
     troopers_mangopay.bank_information_helper:
         class: "%troopers_mangopay.bank_information_helper.class%"
         arguments:
@@ -39,6 +40,7 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@troopers_mangopay.user_helper"
             - "@event_dispatcher"
+
     troopers_mangopay.wallet_helper:
         class: "%troopers_mangopay.wallet_helper.class%"
         arguments:
@@ -46,12 +48,14 @@ services:
             - "@troopers_mangopay.user_helper"
             - "@doctrine.orm.entity_manager"
             - "@event_dispatcher"
+
     troopers_mangopay.card_registration_helper:
         class: "%troopers_mangopay.card_registration_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
             - "@doctrine.orm.entity_manager"
             - "@event_dispatcher"
+
     troopers_mangopay.payment_helper:
         class: "%troopers_mangopay.payment_helper.class%"
         arguments:
@@ -59,6 +63,7 @@ services:
             - "@router"
             - "@event_dispatcher"
             - "@translator"
+
     troopers_mangopay.payment_direct_helper:
         class: "%troopers_mangopay.payment_direct_helper.class%"
         arguments:
@@ -66,10 +71,15 @@ services:
             - "@troopers_mangopay.wallet_helper"
             - "@router"
             - "@event_dispatcher"
+
     troopers_mangopay.bankwire_helper:
         class: "%troopers_mangopay.bankwire_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
+            - '@troopers_mangopay.user_helper'
+            - '@troopers_mangopay.wallet_helper'
+            - '@event_dispatcher'
+            - '@translator.data_collector'
 
     troopers_mangopay.payment_out_helper:
         class: "%troopers_mangopay.payment_out_helper.class%"

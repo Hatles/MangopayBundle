@@ -90,12 +90,22 @@ final class TroopersMangopayEvents
     const UPDATE_CARD_REGISTRATION = 'troopers_mangopay.card.registration.update';
 
     /**
-     * The NEW_PAY_IN event occurs when a apyin is created.
+     * The NEW_PAY_IN event occurs when a payin is created.
      */
     const NEW_PAY_IN = 'troopers_mangopay.pay_in.new';
 
     /**
-     * The ERROR_PAY_IN event occurs when a apyin is errored.
+     * The NEW_BANK_WIRE_PAY_IN event occurs when a bankwire payin is created.
+     */
+    const NEW_BANK_WIRE_PAY_IN = 'troopers_mangopay.ban_wire_pay_in.new';
+
+    /**
+     * The ERROR_PAY_IN event occurs when a payin is errored.
      */
     const ERROR_PAY_IN = 'troopers_mangopay.pay_in.error';
+
+    /**
+     * The ERROR_BANK_WIRE_PAY_IN event occurs when a bankwire payin is errored.
+     */
+    const ERROR_BANK_WIRE_PAY_IN = 'troopers_mangopay.ban_wire_pay_in.error';
 }
