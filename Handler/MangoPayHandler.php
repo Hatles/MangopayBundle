@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
+use Troopers\MangopayBundle\Entity\TransactionEntityInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
 use Troopers\MangopayBundle\Helper\BankInformationHelper;
@@ -95,6 +96,8 @@ class MangoPayHandler
                 return $this->container->get('troopers_mangopay.wallet_helper')->findOrCreateWallet($entity, $inLiveCycleCallback);
             case $entity instanceof BankInformationInterface:
                 return $this->container->get('troopers_mangopay.bank_information_helper')->findOrCreateBankAccount($entity, $inLiveCycleCallback);
+            case $entity instanceof TransactionEntityInterface:
+                return $this->container->get('troopers_mangopay.transaction_helper')->findTransaction($entity);
         }
 
         throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');

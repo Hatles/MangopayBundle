@@ -74,7 +74,7 @@ class MangoPaySubscriber implements EventSubscriber
     {
         $entity = $event->getEntity();
 
-        if($this->reader->isMangoPayEntity($entity))
+        if($this->reader->isMangoPayEntityPersistableOrUpdatable($entity))
         {
             $this->handler->prePersistOrUpdateMangoPayEntity($entity);
         }

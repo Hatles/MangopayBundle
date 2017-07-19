@@ -51,6 +51,10 @@ class MangoPayAnnotationReader
         $this->linkedEntities->add($entity);
     }
 
+    /**
+     * @param $entity
+     * @return null|MangoPayEntity
+     */
     public function isMangoPayEntity($entity)
     {
         $reflection = new \ReflectionClass(get_class($entity));
@@ -79,5 +83,17 @@ class MangoPayAnnotationReader
             }
         }
         return $properties;
+    }
+
+    public function isMangoPayEntityPersistableOrUpdatable($entity)
+    {
+        if($annotation = $this->isMangoPayEntity($entity))
+        {
+            return $annotation->getSupportPersistAndUpdate();
+        }
+        else
+        {
+            return false;
+        }
     }
 }

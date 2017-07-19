@@ -21,10 +21,30 @@ class MangoPayEntity
     const ENTITY_BANKINFORMATION = 'entity.bank_information';
 
     /**
+     * @var boolean
+     */
+    private $supportPersistAndUpdate;
+
+    /**
      * MangoPayEntity constructor.
      * @param array $options
      */
     public function __construct(array $options)
     {
+        if (empty($options['supportPersistAndUpdate'])) {
+            $this->supportPersistAndUpdate = true;
+        }
+        else
+        {
+            $this->supportPersistAndUpdate = $options['supportPersistAndUpdate'];
+        }
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getSupportPersistAndUpdate()
+    {
+        return $this->supportPersistAndUpdate;
     }
 }
