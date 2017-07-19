@@ -20,6 +20,11 @@ class MangoPayField
     private $name;
 
     /**
+     * @var string
+     */
+    private $loadableCallback;
+
+    /**
      * MangoPayField constructor.
      * @param array $options
      */
@@ -32,6 +37,10 @@ class MangoPayField
         {
             $this->name = $options['name'];
         }
+
+        if (!empty($options['loadableCallback'])) {
+            $this->loadableCallback = $options['loadableCallback'];
+        }
     }
 
     /**
@@ -40,5 +49,13 @@ class MangoPayField
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoadableCallback()
+    {
+        return $this->loadableCallback;
     }
 }

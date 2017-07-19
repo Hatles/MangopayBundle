@@ -8,7 +8,9 @@
 
 namespace Troopers\MangopayBundle\Handler;
 
+use Doctrine\Common\Annotations\AnnotationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
@@ -32,14 +34,31 @@ class MangoPayHandler
     }
 
     /**
-     * @param array|object $entity
-     * @param string $property
-     * @param object|array $mangoEntity
+     * @param $entity
+     * @param $property
+     * @param $mangoEntity
      * @param MangoPayField $annotationField
+     * @throws AnnotationException
      */
     public function setFieldFromMangoPayEntity($entity, $property, $mangoEntity, MangoPayField $annotationField)
     {
-        $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
+        $callback = $annotationField->getLoadableCallback();
+
+        if(is_string($callback))
+        {
+            if(method_exists($entity, $callback) && $entity->$callback())
+            {
+                $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
+            }
+            else
+            {
+                throw new AnnotationException("Loadable callback '".$callback."' doesn't exists");
+            }
+        }
+        elseif($callback)
+        {
+            $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
+        }
     }
 
     public function disableEntity($entity)
