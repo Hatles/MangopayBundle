@@ -1,5 +1,5 @@
 {
-    "name": "troopers/mangopay-bundle",
+    "name": "hatles/mangopay-bundle",
     "type": "symfony-bundle",
     "description": "This Bundle include Mangopay php sdk as a service",
     "keywords": ["mangopay"],
