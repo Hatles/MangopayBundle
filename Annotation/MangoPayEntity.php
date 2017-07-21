@@ -31,7 +31,7 @@ class MangoPayEntity
      */
     public function __construct(array $options)
     {
-        if (empty($options['supportPersistAndUpdate'])) {
+        if (!array_key_exists('supportPersistAndUpdate', $options)) {
             $this->supportPersistAndUpdate = true;
         }
         else

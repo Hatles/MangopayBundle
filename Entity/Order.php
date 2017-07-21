@@ -113,7 +113,7 @@ class Order
     /**
      * Set payinTransaction.
      *
-     * @param int $payinTransaction
+     * @param Transaction|int $payinTransaction
      *
      * @return Order
      */
@@ -127,7 +127,7 @@ class Order
     /**
      * Get payinTransaction.
      *
-     * @return int
+     * @return int|Transaction
      */
     public function getPayinTransaction()
     {

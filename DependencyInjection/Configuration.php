@@ -26,6 +26,8 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('client_id')->isRequired()->end()
                 ->scalarNode('client_password')->isRequired()->end()
                 ->scalarNode('base_url')->end()
+                ->scalarNode('order_class')->end()
+                ->scalarNode('transaction_class')->end()
             ->end();
 
         return $treeBuilder;

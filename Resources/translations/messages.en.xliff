@@ -1144,7 +1144,27 @@
 
             <trans-unit id="troopers_mangopay.card_number.label" resname="troopers_mangopay.card_number.label" datatype="plaintext">
                 <source>troopers_mangopay.card_number.label</source>
-                <target>Format de code PIN incorrect</target>
+                <target>Card number</target>
+            </trans-unit>
+
+            <trans-unit id="troopers_mangopay.card_number.placeholder" resname="troopers_mangopay.card_number.placeholder" datatype="plaintext">
+                <source>troopers_mangopay.card_number.placeholder</source>
+                <target>Card number</target>
+            </trans-unit>
+
+            <trans-unit id="troopers_mangopay.card_holder.label" resname="troopers_mangopay.card_holder.label" datatype="plaintext">
+                <source>troopers_mangopay.card_holder.label</source>
+                <target>Name on card</target>
+            </trans-unit>
+
+            <trans-unit id="troopers_mangopay.card_expiry_month.label" resname="troopers_mangopay.card_expiry_month.label" datatype="plaintext">
+                <source>troopers_mangopay.card_expiry_month.label</source>
+                <target>Expiry date</target>
+            </trans-unit>
+
+            <trans-unit id="troopers_mangopay.card_ccv.label" resname="troopers_mangopay.card_ccv.label" datatype="plaintext">
+                <source>troopers_mangopay.card_ccv.label</source>
+                <target>Security code</target>
             </trans-unit>
 
             <trans-unit id="troopers.mangopay.payment_page.helper_block" resname="troopers.mangopay.payment_page.helper_block" datatype="plaintext">

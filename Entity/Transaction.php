@@ -10,7 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
  *
  * @ORM\MappedSuperclass
  */
-class Transaction implements TransactionInterface
+abstract class Transaction implements TransactionInterface
 {
     use TimestampableEntity;
 
@@ -22,6 +22,13 @@ class Transaction implements TransactionInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="mango_transaction_id", type="integer", nullable=true)
+     */
+    protected $mangoTransactionId;
 
     /**
      * Author Id.

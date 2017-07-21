@@ -1,5 +1,5 @@
 <div class="container">
-    <h1 class="h1 font-semibold" id="payment-heading">Paiement en ligne sécurisé</h1>
+    <h1 class="h1 font-semibold" id="payment-heading">Paiement DIRECT en ligne sécurisé</h1>
 
     <div class="flex-row" id="payment-flexRow">
         <div id="payment-col-side">
@@ -11,7 +11,7 @@
                         <li class="item">Entrez le code cryptogramme <small>Généralement situé à l'arrière de la carte de crédit</small></li>
                     </ul>
 
-                    <h2 class="h2 font-light" id="payment-price">Total : <strong>{{ order.payinTransaction.debitedFunds }} todo currency</strong></h2>
+                    <h2 class="h2 font-light" id="payment-price">Total : <strong>{{ transaction.debitedFunds }} todo currency</strong></h2>
 
                     <button onclick="$('#card-form').submit();" id="submit-button" class="btn btn-default btn-success btn-block-md"> <i class="fa fa-check"></i> Valider</button>
                 </div>
@@ -79,7 +79,7 @@
                         </div>
 
 
-                        <form action="{{ path('troopers_mangopaybundle_payment_new', {order: order.id}) }}" data-toggle="ajax" id="card-form" method="POST">
+                        <form action="{{ path('troopers_mangopaybundle_direct_payment_new', {transaction: transaction.id}) }}" data-toggle="ajax" id="card-form" method="POST">
                             {{ form_rest(form) }}
                         </form>
                     </div>

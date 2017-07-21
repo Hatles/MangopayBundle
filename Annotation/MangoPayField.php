@@ -30,7 +30,7 @@ class MangoPayField
      */
     public function __construct(array $options)
     {
-        if (empty($options['name'])) {
+        if (!array_key_exists('name', $options)) {
             $this->name = "";
         }
         else
@@ -38,7 +38,7 @@ class MangoPayField
             $this->name = $options['name'];
         }
 
-        if (!empty($options['loadableCallback'])) {
+        if (array_key_exists('loadableCallback', $options)) {
             $this->loadableCallback = $options['loadableCallback'];
         }
     }

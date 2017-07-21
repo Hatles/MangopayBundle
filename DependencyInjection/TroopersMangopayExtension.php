@@ -30,5 +30,7 @@ class TroopersMangopayExtension extends Extension
         $container->setParameter('troopers_mangopay.client_password', $config['client_password']);
 
         $container->setParameter('troopers_mangopay.base_url', array_key_exists('base_url', $config) ? $config['base_url'] : null);
+        $container->setParameter('troopers_mangopay.order.class', array_key_exists('order_class', $config) ? $config['order_class'] : 'Troopers\MangopayBundle\Entity\Order');
+        $container->setParameter('troopers_mangopay.transaction.class', array_key_exists('transaction_class', $config) ? $config['transaction_class'] : 'Troopers\MangopayBundle\Entity\Transaction');
     }
 }

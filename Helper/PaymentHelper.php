@@ -13,9 +13,11 @@ use MangoPay\Wallet;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\DataCollectorTranslator;
 use Troopers\MangopayBundle\Entity\CardPreAuthorisation;
 use Troopers\MangopayBundle\Entity\Order;
+use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
 use Troopers\MangopayBundle\Event\CardRegistrationEvent;
 use Troopers\MangopayBundle\Event\PayInEvent;
@@ -117,7 +119,7 @@ class PaymentHelper
             [
                 'orderId' => $order->getId(),
             ],
-            true
+            UrlGeneratorInterface::ABSOLUTE_URL
         );
 
         $cardPreAuthorisation->CardId = $card->Id;

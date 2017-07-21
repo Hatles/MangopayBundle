@@ -2,16 +2,21 @@
 
 namespace Troopers\MangopayBundle\Helper;
 
+use MangoPay\CardRegistration;
 use MangoPay\Money;
 use MangoPay\PayIn;
 use MangoPay\PayInExecutionDetailsDirect;
 use MangoPay\PayInPaymentDetailsCard;
+use MangoPay\User;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\Transaction;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\WalletInterface;
+use Troopers\MangopayBundle\Event\CardRegistrationEvent;
+use Troopers\MangopayBundle\TroopersMangopayEvents;
 
 /**
  * ref: troopers_mangopay.payment_direct_helper.
@@ -79,25 +84,23 @@ class PaymentDirectHelper
     }
 
     /**
-     * @param UserInterface $userDebited
-     * @param UserInterface $userCredited
-     * @param $amount
-     * @param $fees
+     * @param TransactionInterface $transaction
+     * @param CardRegistration $cardRegistration
      * @param null $secureModeReturnURL
      * @param null $payInTag
      * @return PayIn
      */
     public function executeDirectTransaction(
-        UserInterface $userDebited,
-        UserInterface $userCredited,
-        $amount,
-        $fees,
+        TransactionInterface $transaction,
+        CardRegistration $cardRegistration,
         $secureModeReturnURL = null,
         $payInTag = null
     ) {
-        $paymentDetails = $this->buildPayInPaymentDetailsCard($userDebited);
+        $paymentDetails = new PayInPaymentDetailsCard();
+        $paymentDetails->CardType = $cardRegistration->CardType;
+        $paymentDetails->CardId = $cardRegistration->CardId;
+
         $executionDetails = $this->buildPayInExecutionDetailsDirect($secureModeReturnURL);
-        $transaction = $this->buildTransaction($userDebited, $userCredited, $amount, $fees);
         $mangoTransaction = $this->createDirectTransaction($transaction, $executionDetails, $paymentDetails, $payInTag);
 
         return $mangoTransaction;
@@ -109,24 +112,27 @@ class PaymentDirectHelper
         $paymentDetails = null,
         $payInTag = null
     ) {
+        $currency = $transaction->getCreditedWallet()->getCurrencyCode();
+
         $debitedFunds = new Money();
-        $debitedFunds->Currency = 'EUR';
+        $debitedFunds->Currency = $currency;
         $debitedFunds->Amount = $transaction->getDebitedFunds();
 
         $fees = new Money();
-        $fees->Currency = 'EUR';
-        $fees->Amount = $transaction->getFees();
+        $fees->Currency = $currency;
+        $fees->Amount = $transaction->getFees()?: 0;
 
         $payIn = new PayIn();
         $payIn->PaymentType = 'DIRECT_DEBIT';
-        $payIn->AuthorId = $transaction->getAuthorId();
-        $payIn->CreditedWalletId = $transaction->getCreditedWalletId();
+        $payIn->AuthorId = $transaction->getAuthor()->getMangoUserId();
+        $payIn->CreditedWalletId = $transaction->getCreditedWallet()->getMangoWalletId();
         $payIn->DebitedFunds = $debitedFunds;
         $payIn->Fees = $fees;
         $payIn->Tag = $payInTag;
 
         $payIn->Nature = 'REGULAR';
         $payIn->Type = 'PAYIN';
+        $transaction->setType('PAYIN');
 
         if (null === $paymentDetails) {
             $payIn->PaymentDetails = new \MangoPay\PayInPaymentDetailsCard();
@@ -156,4 +162,67 @@ class PaymentDirectHelper
 
         return $mangoPayTransaction;
     }
+
+    public function prepareCardRegistrationCallback(User $user, TransactionInterface $transaction)
+    {
+        $cardRegistration = new CardRegistration();
+        $cardRegistration->UserId = $user->Id;
+        $cardRegistration->Currency = $transaction->getCreditedWallet()->getCurrencyCode();
+        $mangoCardRegistration = $this->mangopayHelper->CardRegistrations->create($cardRegistration);
+
+        $event = new CardRegistrationEvent($cardRegistration);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_CARD_REGISTRATION, $event);
+
+        $cardRegistrationURL = $mangoCardRegistration->CardRegistrationURL;
+        $preregistrationData = $mangoCardRegistration->PreregistrationData;
+        $accessKey = $mangoCardRegistration->AccessKey;
+
+        $redirect = $this->router->generate(
+            'troopers_mangopaybundle_direct_payment_finalize',
+            [
+                'transaction' => $transaction->getId(),
+                'cardId'  => $mangoCardRegistration->Id,
+            ]
+        );
+
+        $successRedirect = $this->generateSuccessUrl($transaction->getId());
+
+        return [
+            'callback' => 'payAjaxOrRedirect("'
+                .$redirect.'", "'
+                .$redirect.'", "'
+                .$cardRegistrationURL.'", "'
+                .$preregistrationData.'", "'
+                .$accessKey.'", "'
+                .$successRedirect.'")',
+        ];
+    }
+
+    public function generateSuccessUrl($transactionId)
+    {
+        return $this->router->generate('troopers_mangopaybundle_direct_payment_success', ['transactionId' => $transactionId]);
+    }
+
+    /**
+     * Update card registration with token.
+     *
+     * @param string $cardId
+     * @param string $data
+     * @param string $errorCode
+     *
+     * @return CardRegistration
+     */
+    public function updateCardRegistration($cardId, $data, $errorCode)
+    {
+        $cardRegister = $this->mangopayHelper->CardRegistrations->Get($cardId);
+        $cardRegister->RegistrationData = $data ? 'data='.$data : 'errorCode='.$errorCode;
+
+        $updatedCardRegister = $this->mangopayHelper->CardRegistrations->Update($cardRegister);
+
+        $event = new CardRegistrationEvent($updatedCardRegister);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::UPDATE_CARD_REGISTRATION, $event);
+
+        return $updatedCardRegister;
+    }
+
 }
