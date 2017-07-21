@@ -155,7 +155,7 @@ class PaymentDirectController extends Controller
 //        $event = new OrderEvent($transaction);
 //        $this->get('event_dispatcher')->dispatch(OrderEvents::ORDER_CREATED, $event);
 
-        $transaction->setStatus(TransactionInterface::STATUS_SUCCEEDED);
+        $transaction->setMangoTransactionId($payIn->Id);
 
         //Persist pending order
         $em->persist($transaction);

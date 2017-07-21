@@ -28,6 +28,11 @@ interface TransactionInterface
     public function getMangoTransactionId();
 
     /**
+     * @param  int
+     */
+    public function setMangoTransactionId($transactionId);
+
+    /**
      * @return string
      */
     public function getType();
