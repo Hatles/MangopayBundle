@@ -4,24 +4,18 @@ namespace Troopers\MangopayBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use Troopers\MangopayBundle\Annotation\MangoPayEntity;
 
 /**
  * Transaction.
  *
  * @ORM\MappedSuperclass
+ * @MangoPayEntity(supportPersistAndUpdate = false)
  */
 abstract class Transaction implements TransactionInterface
 {
     use TimestampableEntity;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
 
     /**
      * @var int
@@ -31,33 +25,9 @@ abstract class Transaction implements TransactionInterface
     protected $mangoTransactionId;
 
     /**
-     * Author Id.
-     *
-     * @var int
-     * @ORM\Column(name="authorId", type="integer")
-     */
-    protected $authorId;
-
-    /**
-     * Credited user Id.
-     *
-     * @var int
-     * @ORM\Column(name="creditedUserId", type="integer")
-     */
-    protected $creditedUserId;
-
-    /**
-     * Credited wallet Id.
-     *
-     * @var int
-     * @ORM\Column(name="creditedWalletId", type="integer")
-     */
-    protected $creditedWalletId;
-
-    /**
      * Debited funds.
      *
-     * @var \MangoPay\Money
+     * @var int
      * @ORM\Column(name="debitedFunds", type="integer")
      */
     protected $debitedFunds;
@@ -65,7 +35,7 @@ abstract class Transaction implements TransactionInterface
     /**
      * Credited funds.
      *
-     * @var \MangoPay\Money
+     * @var int
      * @ORM\Column(name="creditedFunds", type="integer")
      */
     protected $creditedFunds;
@@ -73,7 +43,7 @@ abstract class Transaction implements TransactionInterface
     /**
      * Fees.
      *
-     * @var \MangoPay\Money
+     * @var int
      * @ORM\Column(name="fees", type="integer")
      */
     protected $fees;
@@ -83,22 +53,41 @@ abstract class Transaction implements TransactionInterface
      *
      * @var string
      * @ORM\Column(name="status", type="string", length=255)
+     * @Assert\Choice(callback = "getStatuses")
      */
     protected $status;
+
+    /**
+     * TransactionType {PAYIN, PAYOUT, TRANSFER}.
+     *
+     * @var string
+     * @ORM\Column(name="type", type="string", length=255)
+     * @Assert\Choice(callback = "getTypes")
+     */
+    protected $type;
+
+    /**
+     * Mangopay load fields
+     */
 
     /**
      * Result code.
      *
      * @var string
-     * @ORM\Column(name="resultCode", type="integer")
      */
     protected $resultCode;
+
+    /**
+     * Result code.
+     *
+     * @var string
+     */
+    protected $tag;
 
     /**
      * The PreAuthorization result Message explaining the result code.
      *
      * @var string
-     * @ORM\Column(name="resultMessage", type="string", length=255)
      */
     protected $resultMessage;
 
@@ -106,120 +95,46 @@ abstract class Transaction implements TransactionInterface
      * Execution date;.
      *
      * @var \DateTime
-     * @ORM\Column(name="executionDate", type="datetime")
      */
     protected $executionDate;
-
-    /**
-     * TransactionType {PAYIN, PAYOUT, TRANSFER}.
-     *
-     * @var string
-     * @ORM\Column(name="type", type="string", length=255)
-     */
-    protected $type;
 
     /**
      * TransactionNature { REGULAR, REFUND, REPUDIATION }.
      *
      * @var string
-     * @ORM\Column(name="nature", type="string", length=255)
      */
     protected $nature;
 
     /**
-     * CardType { CB_VISA_MASTERCARD, MAESTRO, DINERS, P24″, MASTERPASS }.
+     * PaymentType { CARD, DIRECT_DEBIT, PREAUTHORIZED, BANK_WIRE }.
      *
      * @var string
-     * @ORM\Column(name="cardType", type="string", length=255)
      */
-    protected $cardType;
+    protected $paymentType;
+
+    public function __construct()
+    {
+        $this->status = self::STATUS_CREATED;
+    }
 
     /**
-     * Get id.
-     *
      * @return int
      */
-    public function getId()
+    public function getMangoTransactionId()
     {
-        return $this->id;
+        return $this->mangoTransactionId;
     }
 
     /**
-     * Get authorId.
-     *
-     * @return string
+     * @param int $mangoTransactionId
      */
-    public function getAuthorId()
+    public function setMangoTransactionId($mangoTransactionId)
     {
-        return $this->authorId;
+        $this->mangoTransactionId = $mangoTransactionId;
     }
 
     /**
-     * Set authorId.
-     *
-     * @param string $authorId
-     *
-     * @return $this
-     */
-    public function setAuthorId($authorId)
-    {
-        $this->authorId = $authorId;
-
-        return $this;
-    }
-
-    /**
-     * Get creditedUserId.
-     *
-     * @return string
-     */
-    public function getCreditedUserId()
-    {
-        return $this->creditedUserId;
-    }
-
-    /**
-     * Set creditedUserId.
-     *
-     * @param string $creditedUserId
-     *
-     * @return $this
-     */
-    public function setCreditedUserId($creditedUserId)
-    {
-        $this->creditedUserId = $creditedUserId;
-
-        return $this;
-    }
-
-    /**
-     * Get creditedWalletId.
-     *
-     * @return string
-     */
-    public function getCreditedWalletId()
-    {
-        return $this->creditedWalletId;
-    }
-
-    /**
-     * Set creditedUserId.
-     *
-     * @param string $creditedWalletId
-     *
-     * @return $this
-     */
-    public function setCreditedWalletId($creditedWalletId)
-    {
-        $this->creditedWalletId = $creditedWalletId;
-
-        return $this;
-    }
-
-    /**
-     * Get debitedFunds.
-     *
-     * @return string
+     * @return int
      */
     public function getDebitedFunds()
     {
@@ -227,23 +142,15 @@ abstract class Transaction implements TransactionInterface
     }
 
     /**
-     * Set debitedFunds.
-     *
-     * @param string $debitedFunds
-     *
-     * @return $this
+     * @param int $debitedFunds
      */
     public function setDebitedFunds($debitedFunds)
     {
         $this->debitedFunds = $debitedFunds;
-
-        return $this;
     }
 
     /**
-     * Get creditedFunds.
-     *
-     * @return string
+     * @return int
      */
     public function getCreditedFunds()
     {
@@ -251,23 +158,15 @@ abstract class Transaction implements TransactionInterface
     }
 
     /**
-     * Set creditedFunds.
-     *
-     * @param string $creditedFunds
-     *
-     * @return $this
+     * @param int $creditedFunds
      */
     public function setCreditedFunds($creditedFunds)
     {
         $this->creditedFunds = $creditedFunds;
-
-        return $this;
     }
 
     /**
-     * Get fees.
-     *
-     * @return string
+     * @return int
      */
     public function getFees()
     {
@@ -275,22 +174,14 @@ abstract class Transaction implements TransactionInterface
     }
 
     /**
-     * Set fees.
-     *
-     * @param string $fees
-     *
-     * @return $this
+     * @param int $fees
      */
     public function setFees($fees)
     {
         $this->fees = $fees;
-
-        return $this;
     }
 
     /**
-     * Get status.
-     *
      * @return string
      */
     public function getStatus()
@@ -299,94 +190,19 @@ abstract class Transaction implements TransactionInterface
     }
 
     /**
-     * Set status.
-     *
      * @param string $status
-     *
-     * @return $this
      */
     public function setStatus($status)
     {
         $this->status = $status;
-
-        return $this;
     }
 
-    /**
-     * Get resultCode.
-     *
-     * @return string
-     */
-    public function getResultCode()
+    public static function getStatuses()
     {
-        return $this->resultCode;
+        return array(self::STATUS_CREATED, self::STATUS_SUCCEEDED, self::STATUS_FAILED);
     }
 
     /**
-     * Set resultCode.
-     *
-     * @param string $resultCode
-     *
-     * @return $this
-     */
-    public function setResultCode($resultCode)
-    {
-        $this->resultCode = $resultCode;
-
-        return $this;
-    }
-
-    /**
-     * Get resultMessage.
-     *
-     * @return string
-     */
-    public function getResultMessage()
-    {
-        return $this->resultMessage;
-    }
-
-    /**
-     * Set resultMessage.
-     *
-     * @param string $resultMessage
-     *
-     * @return $this
-     */
-    public function setResultMessage($resultMessage)
-    {
-        $this->resultMessage = $resultMessage;
-
-        return $this;
-    }
-
-    /**
-     * Get executionDate.
-     *
-     * @return string
-     */
-    public function getExecutionDate()
-    {
-        return $this->executionDate;
-    }
-
-    /**
-     * Set executionDate.
-     *
-     * @param string $executionDate
-     *
-     * @return $this
-     */
-    public function setExecutionDate($executionDate)
-    {
-        $this->executionDate = $executionDate;
-
-        return $this;
-    }
-
-    /**
-     * Get type.
-     *
      * @return string
      */
     public function getType()
@@ -395,22 +211,77 @@ abstract class Transaction implements TransactionInterface
     }
 
     /**
-     * Set type.
-     *
      * @param string $type
-     *
-     * @return $this
      */
     public function setType($type)
     {
         $this->type = $type;
+    }
 
-        return $this;
+    public function setPayin()
+    {
+        $this->type = self::TYPE_PAYIN;
+    }
+
+    public static function getTypes()
+    {
+        return array(self::TYPE_PAYIN, self::TYPE_PAYOUT);
+    }
+
+    public function setPayout()
+    {
+        $this->type = self::TYPE_PAYOUT;
     }
 
     /**
-     * Get nature.
-     *
+     * @return string
+     */
+    public function getResultCode()
+    {
+        return $this->resultCode;
+    }
+
+    /**
+     * @param string $resultCode
+     */
+    public function setResultCode($resultCode)
+    {
+        $this->resultCode = $resultCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getResultMessage()
+    {
+        return $this->resultMessage;
+    }
+
+    /**
+     * @param string $resultMessage
+     */
+    public function setResultMessage($resultMessage)
+    {
+        $this->resultMessage = $resultMessage;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getExecutionDate()
+    {
+        return $this->executionDate;
+    }
+
+    /**
+     * @param \DateTime $executionDate
+     */
+    public function setExecutionDate($executionDate)
+    {
+        $this->executionDate = $executionDate;
+    }
+
+    /**
      * @return string
      */
     public function getNature()
@@ -419,40 +290,42 @@ abstract class Transaction implements TransactionInterface
     }
 
     /**
-     * Set nature.
-     *
      * @param string $nature
-     *
-     * @return $this
      */
     public function setNature($nature)
     {
         $this->nature = $nature;
-
-        return $this;
     }
 
     /**
-     * Get card type.
-     *
      * @return string
      */
-    public function getCardType()
+    public function getPaymentType()
     {
-        return $this->cardType;
+        return $this->paymentType;
     }
 
     /**
-     * Set card type.
-     *
-     * @param string $cardType
-     *
-     * @return $this
+     * @param string $paymentType
      */
-    public function setCardType($cardType)
+    public function setPaymentType($paymentType)
     {
-        $this->cardType = $cardType;
+        $this->paymentType = $paymentType;
+    }
 
-        return $this;
+    /**
+     * @return string
+     */
+    public function getTag()
+    {
+        return $this->tag;
+    }
+
+    /**
+     * @param string $tag
+     */
+    public function setTag($tag)
+    {
+        $this->tag = $tag;
     }
 }

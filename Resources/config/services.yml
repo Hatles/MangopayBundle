@@ -68,6 +68,7 @@ services:
     troopers_mangopay.payment_direct_helper:
         class: "%troopers_mangopay.payment_direct_helper.class%"
         arguments:
+            - "@service_container"
             - "@troopers_mangopay.mango_api"
             - "@troopers_mangopay.wallet_helper"
             - "@router"

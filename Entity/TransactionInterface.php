@@ -43,6 +43,13 @@ interface TransactionInterface
     public function setType($type);
 
     /**
+     * Set Author
+     *
+     * @param  UserInterface
+     */
+    public function setAuthor($author);
+
+    /**
      * Author
      *
      * @return UserInterface
@@ -58,11 +65,21 @@ interface TransactionInterface
     public function getDebitedFunds();
 
     /**
+     * @param int
+     */
+    public function setDebitedFunds($amount);
+
+    /**
      * It represents your fees taken on the DebitedFunds.In cents so 100€ will be written like « Amount » : 10000.
      *
      * @return int
      */
     public function getFees();
+
+    /**
+     * @param int
+     */
+    public function setFees($fees);
 
     /**
      * The credited wallet.
@@ -72,11 +89,18 @@ interface TransactionInterface
     public function getCreditedWallet();
 
     /**
-     * URL Format expected.
+     * The credited wallet.
      *
-     * @return int
+     * @param   WalletInterface
      */
-    public function getCardType();
+    public function setCreditedWallet($wallet);
+
+    /**
+     * The debited wallet.
+     *
+     * @return  WalletInterface
+     */
+    public function getDebitedWallet();
 
     /**
      * TransactionStatus {CREATED, SUCCEEDED, FAILED}
@@ -84,9 +108,13 @@ interface TransactionInterface
      */
     public function getStatus();
 
-
     /**
      * @param string
      */
     public function setStatus($status);
+
+    /**
+     * @return string
+     */
+    public function getTag();
 }

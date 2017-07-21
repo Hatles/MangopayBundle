@@ -9,6 +9,7 @@ use MangoPay\PayInExecutionDetailsDirect;
 use MangoPay\PayInPaymentDetailsCard;
 use MangoPay\User;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\Transaction;
@@ -27,9 +28,11 @@ class PaymentDirectHelper
     private $walletHelper;
     private $router;
     private $dispatcher;
+    private $container;
 
-    public function __construct(MangopayHelper $mangopayHelper, WalletHelper $walletHelper, Router $router, EventDispatcherInterface $dispatcher)
+    public function __construct(ContainerInterface $container, MangopayHelper $mangopayHelper, WalletHelper $walletHelper, Router $router, EventDispatcherInterface $dispatcher)
     {
+        $this->container = $container;
         $this->mangopayHelper = $mangopayHelper;
         $this->walletHelper = $walletHelper;
         $this->router = $router;
@@ -65,22 +68,81 @@ class PaymentDirectHelper
     }
 
     /**
-     * @param UserInterface $userDebited
+     * @param UserInterface $author
      * @param UserInterface $userCredited
-     * @param $amount
-     * @param $fees
-     * @return Transaction
+     * @param string $currency
+     * @param int $amount
+     * @param int $fees
+     * @return TransactionInterface
      */
-    public function buildTransaction(UserInterface $userDebited, UserInterface $userCredited, $currency, $amount, $fees)
+    public function buildTransactionWithCurrency(UserInterface $author, UserInterface $userCredited, $currency, $amount, $fees = 0)
     {
-        $transaction = new Transaction();
-        $transaction->setAuthorId($userDebited->getMangoUserId());
-        $transaction->setCreditedUserId($userCredited->getMangoUserId());
+        $class = $this->container->getParameter('troopers_mangopay.transaction.class');
+
+        /**
+         * @var TransactionInterface $transaction
+         */
+        $transaction = new $class();
+        $transaction->setAuthor($author->getMangoUserId());
         $transaction->setDebitedFunds($amount);
         $transaction->setFees($fees);
-        $transaction->setCreditedWalletId($this->walletHelper->findOrCreateWalletWithCurrency($userCredited, $currency)->Id);
+        $transaction->setCreditedWallet($this->walletHelper->findOrCreateWalletWithCurrency($userCredited, $currency));
 
         return $transaction;
+    }
+
+    /**
+     * @param UserInterface $author
+     * @param WalletInterface $wallet
+     * @param int $amount
+     * @param int $fees
+     * @return TransactionInterface
+     */
+    public function buildTransaction(UserInterface $author, WalletInterface $wallet, $amount, $fees = 0)
+    {
+        $class = $this->container->getParameter('troopers_mangopay.transaction.class');
+
+        /**
+         * @var TransactionInterface $transaction
+         */
+        $transaction = new $class();
+        $transaction->setAuthor($author->getMangoUserId());
+        $transaction->setDebitedFunds($amount);
+        $transaction->setFees($fees);
+        $transaction->setCreditedWallet($wallet);
+
+        return $transaction;
+    }
+
+    /**
+     * @param UserInterface $author
+     * @param WalletInterface $wallet
+     * @param CardRegistration $cardRegistration
+     * @param $amount
+     * @param int $fees
+     * @param null|string $secureModeReturnURL
+     * @param null|string $payInTag
+     * @return PayIn
+     */
+    public function executeTransaction(
+        UserInterface $author,
+        WalletInterface $wallet,
+        CardRegistration $cardRegistration,
+        $amount,
+        $fees = 0,
+        $secureModeReturnURL = null,
+        $payInTag = null
+    ) {
+        $transaction = $this->buildTransaction($author, $wallet, $amount, $fees);
+
+        $paymentDetails = new PayInPaymentDetailsCard();
+        $paymentDetails->CardType = $cardRegistration->CardType;
+        $paymentDetails->CardId = $cardRegistration->CardId;
+
+        $executionDetails = $this->buildPayInExecutionDetailsDirect($secureModeReturnURL);
+        $mangoTransaction = $this->createDirectTransaction($transaction, $executionDetails, $paymentDetails, $payInTag);
+
+        return $mangoTransaction;
     }
 
     /**
@@ -128,7 +190,7 @@ class PaymentDirectHelper
         $payIn->CreditedWalletId = $transaction->getCreditedWallet()->getMangoWalletId();
         $payIn->DebitedFunds = $debitedFunds;
         $payIn->Fees = $fees;
-        $payIn->Tag = $payInTag;
+        $payIn->Tag = $payInTag?: $transaction->getTag();
 
         $payIn->Nature = 'REGULAR';
         $payIn->Type = 'PAYIN';
