@@ -11,6 +11,12 @@ namespace Troopers\MangopayBundle\Entity;
 
 interface KycDocumentInterface
 {
+    const TYPE_IDENTITY_PROOF = 'IDENTITY_PROOF';
+    const TYPE_REGISTRATION_PROOF = 'REGISTRATION_PROOF';
+    const TYPE_ARTICLES_OF_ASSOCIATION = 'ARTICLES_OF_ASSOCIATION';
+    const TYPE_SHAREHOLDER_DECLARATION = 'SHAREHOLDER_DECLARATION';
+    const TYPE_ADDRESS_PROOF = 'ADDRESS_PROOF';
+
     /**
      * @return UserInterface
      */
@@ -35,4 +41,9 @@ interface KycDocumentInterface
      * @return string
      */
     public function getType();
+
+    /**
+     * @return array
+     */
+    public function getPages();
 }

@@ -91,7 +91,7 @@ class KycHelper
         $mangoDocument = $this->findOrCreateKycDocument($kycDocument);
 
         $mangoPage = new KycPage();
-        $mangoPage->File = $kycPage->getFile();
+        $mangoPage->File = $kycPage->getFileBase64();
 
         $mangoPage = $this->mangopayHelper->Users->CreateKycPage($mangoUser->Id, $mangoDocument->Id, $mangoPage);
 
@@ -114,6 +114,37 @@ class KycHelper
 
         $event = new KycEvent($mangoDocument, $kycDocument->getUser(), $kycDocument);
         $this->dispatcher->dispatch(TroopersMangopayEvents::ASK_VALIDATION_KYCDOCUMENT, $event);
+
+        $this->entityManager->persist($kycDocument);
+        $this->entityManager->flush();
+
+        return $mangoDocument;
+    }
+
+    public function sendKycDocument(KycDocumentInterface $kycDocument)
+    {
+        $mangoDocument = $this->findOrCreateKycDocument($kycDocument);
+        $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
+
+        foreach ($kycDocument->getPages() as $page)
+        {
+            /**
+             * @var KycPageInterface $page
+             */
+            $mangoPage = new KycPage();
+            $mangoPage->File = $page->getFileBase64();
+
+            $mangoPage = $this->mangopayHelper->Users->CreateKycPage($mangoUser->Id, $mangoDocument->Id, $mangoPage);
+
+//            $event = new KycEvent($mangoDocument, $kycDocument->getUser(), $kycDocument);
+//            $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_KYCPAGE, $event);
+        }
+
+        $mangoDocument->Status = "VALIDATION_ASKED";
+        $mangoDocument = $this->mangopayHelper->Users->UpdateKycDocument($mangoUser->Id, $mangoDocument);
+
+        $event = new KycEvent($mangoDocument, $kycDocument->getUser(), $kycDocument);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_KYCDOCUMENT, $event);
 
         $this->entityManager->persist($kycDocument);
         $this->entityManager->flush();
