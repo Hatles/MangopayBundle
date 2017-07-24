@@ -50,6 +50,7 @@ abstract class KycDocument implements KycDocumentInterface
     public function __construct()
     {
         $this->pages = new ArrayCollection();
+        $this->pages->add(new KycPage());
     }
 
     /**

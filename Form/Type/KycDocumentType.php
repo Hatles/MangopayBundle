@@ -27,7 +27,7 @@ class KycDocumentType extends AbstractType
             'allow_delete' => false,
             'entry_type' => KycPageType::class,
             'add_text' => 'New Page',
-            'label' => 'label_test',
+            'label' => false,
             'entry_options' => array(
                 'attr' => array(
                     'class' => 'uploadFile'
