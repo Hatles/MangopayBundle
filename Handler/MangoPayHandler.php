@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
+use Troopers\MangopayBundle\Entity\KycDocumentInterface;
 use Troopers\MangopayBundle\Entity\TransactionEntityInterface;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
@@ -56,7 +57,7 @@ class MangoPayHandler
                 throw new AnnotationException("Loadable callback '".$callback."' doesn't exists");
             }
         }
-        elseif($callback)
+        elseif($callback === null || $callback === true)
         {
             $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
         }
@@ -87,11 +88,11 @@ class MangoPayHandler
      */
     private function getValueFromMangoPayEntity($property, $mangoEntity, MangoPayField $annotationField)
     {
-        $mangoProperty = $annotationField->getName() ?: $property;
+        $mangoProperty = $annotationField->getName() ?: ucfirst($property);
 
-        if(property_exists($mangoEntity, $property))
+        if(property_exists($mangoEntity, $mangoProperty))
         {
-            return $mangoEntity->{$property};
+            return $mangoEntity->{$mangoProperty};
         }
         else
         {
@@ -118,6 +119,8 @@ class MangoPayHandler
                 return $this->container->get('troopers_mangopay.bank_information_helper')->findOrCreateBankAccount($entity, $inLiveCycleCallback);
             case $entity instanceof TransactionInterface:
                 return $this->container->get('troopers_mangopay.transaction_helper')->findTransaction($entity);
+            case $entity instanceof KycDocumentInterface:
+                return $this->container->get('troopers_mangopay.kyc_helper')->findOrCreateKycDocument($entity);
         }
 
         throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');

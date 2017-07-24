@@ -13,14 +13,14 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Troopers\MangopayBundle\Annotation\MangoPayEntity;
+use Troopers\MangopayBundle\Annotation\MangoPayField;
 
 /**
  * KYC Document.
  *
  * @ORM\MappedSuperclass
- *
  */
-//@MangoPayEntity(supportPersistAndUpdate=false)
 abstract class KycDocument implements KycDocumentInterface
 {
     /**
@@ -34,6 +34,7 @@ abstract class KycDocument implements KycDocumentInterface
      * @var string
      * @Assert\NotBlank(message="This document type is invalid")
      * @Assert\Choice(callback="getTypes")
+     * @MangoPayField()
      */
     protected $type;
 
@@ -43,6 +44,30 @@ abstract class KycDocument implements KycDocumentInterface
      * @Assert\Valid()
      */
     protected $pages;
+
+    /**
+     * @var \DateTime
+     * @MangoPayField()
+     */
+    protected $creationDate;
+
+    /**
+     * @var string
+     * @MangoPayField()
+     */
+    protected $status;
+
+    /**
+     * @var string
+     * @MangoPayField()
+     */
+    protected $refusedReasonMessage;
+
+    /**
+     * @var string
+     * @MangoPayField()
+     */
+    protected $refusedReasonType;
 
     /**
      * KycDocument constructor.
@@ -107,6 +132,70 @@ abstract class KycDocument implements KycDocumentInterface
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
+    }
+
+    /**
+     * @param \DateTime $creationDate
+     */
+    public function setCreationDate($creationDate)
+    {
+        $this->creationDate = $creationDate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefusedReasonMessage()
+    {
+        return $this->refusedReasonMessage;
+    }
+
+    /**
+     * @param string $refusedReasonMessage
+     */
+    public function setRefusedReasonMessage($refusedReasonMessage)
+    {
+        $this->refusedReasonMessage = $refusedReasonMessage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefusedReasonType()
+    {
+        return $this->refusedReasonType;
+    }
+
+    /**
+     * @param string $refusedReasonType
+     */
+    public function setRefusedReasonType($refusedReasonType)
+    {
+        $this->refusedReasonType = $refusedReasonType;
+    }
+
+    /**
      * @Assert\Callback
      * @param ExecutionContextInterface $context
      * @param $payload
@@ -118,5 +207,10 @@ abstract class KycDocument implements KycDocumentInterface
                 ->atPath('pages')
                 ->addViolation();
         }
+    }
+
+    function __toString()
+    {
+        return $this->getType() ?: "TYPE_NULL";
     }
 }
