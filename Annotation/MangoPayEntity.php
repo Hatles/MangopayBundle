@@ -33,9 +33,7 @@ class MangoPayEntity
     {
         if (!array_key_exists('supportPersistAndUpdate', $options)) {
             $this->supportPersistAndUpdate = true;
-        }
-        else
-        {
+        } else {
             $this->supportPersistAndUpdate = $options['supportPersistAndUpdate'];
         }
     }

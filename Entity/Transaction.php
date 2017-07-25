@@ -117,6 +117,16 @@ abstract class Transaction implements TransactionInterface
         $this->status = self::STATUS_CREATED;
     }
 
+    public static function getStatuses()
+    {
+        return array(self::STATUS_CREATED, self::STATUS_SUCCEEDED, self::STATUS_FAILED);
+    }
+
+    public static function getTypes()
+    {
+        return array(self::TYPE_PAYIN, self::TYPE_PAYOUT);
+    }
+
     /**
      * @return int
      */
@@ -197,11 +207,6 @@ abstract class Transaction implements TransactionInterface
         $this->status = $status;
     }
 
-    public static function getStatuses()
-    {
-        return array(self::STATUS_CREATED, self::STATUS_SUCCEEDED, self::STATUS_FAILED);
-    }
-
     /**
      * @return string
      */
@@ -221,11 +226,6 @@ abstract class Transaction implements TransactionInterface
     public function setPayin()
     {
         $this->type = self::TYPE_PAYIN;
-    }
-
-    public static function getTypes()
-    {
-        return array(self::TYPE_PAYIN, self::TYPE_PAYOUT);
     }
 
     public function setPayout()

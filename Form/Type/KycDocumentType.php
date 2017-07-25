@@ -9,16 +9,16 @@
 namespace Troopers\MangopayBundle\Form\Type;
 
 
+use MLC\CoreBundle\Form\Type\CollectionType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use MLC\CoreBundle\Form\Type\CollectionType;
 
 class KycDocumentType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array                $options
+     * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -46,7 +46,8 @@ class KycDocumentType extends AbstractType
         ));
     }
 
-    public function getBlockPrefix() {
+    public function getBlockPrefix()
+    {
         return 'kyc_page_form';
     }
 }

@@ -32,9 +32,7 @@ class MangoPayField
     {
         if (!array_key_exists('name', $options)) {
             $this->name = "";
-        }
-        else
-        {
+        } else {
             $this->name = $options['name'];
         }
 

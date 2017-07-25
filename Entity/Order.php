@@ -87,6 +87,16 @@ class Order
     }
 
     /**
+     * Get status.
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
      * Set status.
      *
      * @param string $status
@@ -101,13 +111,13 @@ class Order
     }
 
     /**
-     * Get status.
+     * Get payinTransaction.
      *
-     * @return string
+     * @return int|Transaction
      */
-    public function getStatus()
+    public function getPayinTransaction()
     {
-        return $this->status;
+        return $this->payinTransaction;
     }
 
     /**
@@ -122,16 +132,6 @@ class Order
         $this->payinTransaction = $payinTransaction;
 
         return $this;
-    }
-
-    /**
-     * Get payinTransaction.
-     *
-     * @return int|Transaction
-     */
-    public function getPayinTransaction()
-    {
-        return $this->payinTransaction;
     }
 
     /**

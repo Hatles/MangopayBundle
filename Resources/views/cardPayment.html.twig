@@ -8,12 +8,17 @@
                     <ul class="vertical-breadcrumb hidden-xs hidden-sm">
                         <li class="item">Entrez le numéro de carte</li>
                         <li class="item">Entrez votre nom et la date d'expiration</li>
-                        <li class="item">Entrez le code cryptogramme <small>Généralement situé à l'arrière de la carte de crédit</small></li>
+                        <li class="item">Entrez le code cryptogramme
+                            <small>Généralement situé à l'arrière de la carte de crédit</small>
+                        </li>
                     </ul>
 
-                    <h2 class="h2 font-light" id="payment-price">Total : <strong>{{ order.payinTransaction.debitedFunds }} todo currency</strong></h2>
+                    <h2 class="h2 font-light" id="payment-price">Total :
+                        <strong>{{ order.payinTransaction.debitedFunds }} todo currency</strong></h2>
 
-                    <button onclick="$('#card-form').submit();" id="submit-button" class="btn btn-default btn-success btn-block-md"> <i class="fa fa-check"></i> Valider</button>
+                    <button onclick="$('#card-form').submit();" id="submit-button"
+                            class="btn btn-default btn-success btn-block-md"><i class="fa fa-check"></i> Valider
+                    </button>
                 </div>
             </div>
 
@@ -36,28 +41,28 @@
                             <div class="credit-card">
                                 <div id="creditCard-front-number">
                                     <div class="form-group -creditCard">
-                                        {{form_label(form.cardNumber)}}
-                                        {{form_widget(form.cardNumber)}}
+                                        {{ form_label(form.cardNumber) }}
+                                        {{ form_widget(form.cardNumber) }}
                                     </div>
                                 </div>
 
                                 <div class="flex-row">
                                     <div class="form-group -creditCard pull-left" id="creditCard-front-holder">
-                                        {{form_label(form.cardHolder)}}
-                                        {{form_widget(form.cardHolder)}}
+                                        {{ form_label(form.cardHolder) }}
+                                        {{ form_widget(form.cardHolder) }}
                                     </div>
 
                                     <div class="form-group -creditCard pull-left" id="creditCard-front-expiration">
                                         <div>
-                                            {{form_label(form.cardExpiryMonth)}}
+                                            {{ form_label(form.cardExpiryMonth) }}
                                         </div>
 
                                         <div class="pull-left" id="creditCard-front-expiration-month">
-                                            {{form_widget(form.cardExpiryMonth)}}
+                                            {{ form_widget(form.cardExpiryMonth) }}
                                         </div>
 
                                         <div class="pull-left" id="creditCard-front-expiration-year">
-                                            {{form_widget(form.cardExpiryYear)}}
+                                            {{ form_widget(form.cardExpiryYear) }}
                                         </div>
                                     </div>
                                 </div>
@@ -68,7 +73,7 @@
                             <div class="credit-card -back">
                                 <div class="clearfix">
                                     <div class="pull-right" id="creditCard-back-expiration-ccv">
-                                        {{form_row(form.ccv)}}
+                                        {{ form_row(form.ccv) }}
                                     </div>
                                 </div>
 
@@ -79,7 +84,8 @@
                         </div>
 
 
-                        <form action="{{ path('troopers_mangopaybundle_payment_new', {order: order.id}) }}" data-toggle="ajax" id="card-form" method="POST">
+                        <form action="{{ path('troopers_mangopaybundle_payment_new', {order: order.id}) }}"
+                              data-toggle="ajax" id="card-form" method="POST">
                             {{ form_rest(form) }}
                         </form>
                     </div>
@@ -94,13 +100,13 @@
     </div>
 
     <script type="text/javascript">
-        $("#troopers_mangopay_card_expiry_month, #troopers_mangopay_card_expiry_year").on('change', function(e) {
+        $("#troopers_mangopay_card_expiry_month, #troopers_mangopay_card_expiry_year").on('change', function (e) {
             if ($(this).val().length < 2) {
                 $(this).val("0" + $(this).val());
             }
         });
 
-        $('input').keypress(function() {
+        $('input').keypress(function () {
             if ($('#troopers_mangopaybundle_card_type_ccv').val()) {
                 $("#payment-process .vertical-breadcrumb > .item").eq(2).addClass('-active');
             }
@@ -115,7 +121,8 @@
 
             if ($('#troopers_mangopaybundle_card_type_cardNumber').val()) {
                 $("#payment-process .vertical-breadcrumb > .item").eq(0).addClass('-active');
-            };
+            }
+            ;
         });
     </script>
 </div>

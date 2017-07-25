@@ -10,7 +10,6 @@ namespace Troopers\MangopayBundle\Listener;
 
 
 use MangoPay\Libraries\ResponseException;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Troopers\MangopayBundle\Exception\MangoPayResponseException;
 

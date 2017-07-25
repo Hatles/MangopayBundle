@@ -9,7 +9,6 @@ use MangoPay\UserNatural;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Troopers\MangopayBundle\Entity\AddressInterface;
 use Troopers\MangopayBundle\Entity\CountryInterface;
-use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Entity\UserLegalInterface;
 use Troopers\MangopayBundle\Event\UserEvent;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
@@ -41,7 +40,7 @@ class UserLegalHelper
 
         if ($mangoUserId = $user->getMangoUserId()) {
             $mangoUser = $this->mangopayHelper->Users->GetLegal($mangoUserId);
-        } elseif(!$inLiveCycleCallback) {
+        } elseif (!$inLiveCycleCallback) {
             $mangoUser = $this->createMangoUserLegal($user, $inLiveCycleCallback);
         }
 
@@ -95,16 +94,14 @@ class UserLegalHelper
         $headquartersAddress = null;
         if (($headquartersAddressTmp = $user->getHeadquartersAddress()) instanceof Address) {
             $headquartersAddress = $headquartersAddressTmp;
-        }
-        elseif ($headquartersAddressTmp instanceof AddressInterface) {
+        } elseif ($headquartersAddressTmp instanceof AddressInterface) {
             $headquartersAddress = $headquartersAddressTmp->getMangoAddress();
         }
 
         $legalRepresentativeAddress = null;
         if (($legalRepresentativeAddressTmp = $user->getLegalRepresentativeAddress()) instanceof Address) {
             $legalRepresentativeAddress = $legalRepresentativeAddressTmp;
-        }
-        elseif ($legalRepresentativeAddressTmp instanceof AddressInterface) {
+        } elseif ($legalRepresentativeAddressTmp instanceof AddressInterface) {
             $legalRepresentativeAddress = $legalRepresentativeAddressTmp->getMangoAddress();
         }
 
@@ -124,12 +121,25 @@ class UserLegalHelper
         $event = new UserEvent($user, $mangoUser);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_USER_LEGAL, $event);
 
-        if(!$inLiveCycleCallback) {
+        if (!$inLiveCycleCallback) {
             $this->entityManager->persist($user);
             $this->entityManager->flush();
         }
 
         return $mangoUser;
+    }
+
+    /**
+     * @param UserLegalInterface $user
+     * @return \MangoPay\UserLegal|UserNatural
+     */
+    public function updateOrPersistMangoUserLegal(UserLegalInterface $user)
+    {
+        if (!$user->getId() or !$user->getMangoUserId()) {
+            return $this->createMangoUserLegal($user, true);
+        } else {
+            return $this->updateMangoUserLegal($user, true);
+        }
     }
 
     /**
@@ -179,16 +189,14 @@ class UserLegalHelper
         $headquartersAddress = null;
         if (($headquartersAddressTmp = $user->getHeadquartersAddress()) instanceof Address) {
             $headquartersAddress = $headquartersAddressTmp;
-        }
-        elseif ($headquartersAddressTmp instanceof AddressInterface) {
+        } elseif ($headquartersAddressTmp instanceof AddressInterface) {
             $headquartersAddress = $headquartersAddressTmp->getMangoAddress();
         }
 
         $legalRepresentativeAddress = null;
         if (($legalRepresentativeAddressTmp = $user->getLegalRepresentativeAddress()) instanceof Address) {
             $legalRepresentativeAddress = $legalRepresentativeAddressTmp;
-        }
-        elseif ($legalRepresentativeAddressTmp instanceof AddressInterface) {
+        } elseif ($legalRepresentativeAddressTmp instanceof AddressInterface) {
             $legalRepresentativeAddress = $legalRepresentativeAddressTmp->getMangoAddress();
         }
 
@@ -206,27 +214,11 @@ class UserLegalHelper
 //        $event = new UserEvent($user, $mangoUser);
 //        $this->dispatcher->dispatch(TroopersMangopayEvents::UPDATE_USER_LEGAL, $event);
 
-        if(!$inLiveCycleCallback) {
+        if (!$inLiveCycleCallback) {
             $this->entityManager->persist($user);
             $this->entityManager->flush();
         }
 
         return $mangoUser;
-    }
-
-    /**
-     * @param UserLegalInterface $user
-     * @return \MangoPay\UserLegal|UserNatural
-     */
-    public function updateOrPersistMangoUserLegal(UserLegalInterface $user)
-    {
-        if(!$user->getId() or !$user->getMangoUserId())
-        {
-            return $this->createMangoUserLegal($user, true);
-        }
-        else
-        {
-            return $this->updateMangoUserLegal($user, true);
-        }
     }
 }

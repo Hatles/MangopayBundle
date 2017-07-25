@@ -5,12 +5,7 @@ namespace Troopers\MangopayBundle\Helper;
 use Doctrine\ORM\EntityManager;
 use MangoPay\BankAccount;
 use MangoPay\BankAccountDetailsIBAN;
-use MangoPay\Libraries\Exception;
-use MangoPay\Libraries\Logs;
-use MangoPay\Libraries\ResponseException;
-use MangoPay\User;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
 use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Event\BankInformationEvent;
@@ -62,7 +57,7 @@ class BankInformationHelper
 
         if ($mangoBankAccountId = $bankInformation->getMangoBankAccountId()) {
             $mangoBankAccount = $this->mangopayHelper->Users->GetBankAccount($bankInformation->getUser()->getMangoUserId(), $mangoBankAccountId);
-        } elseif(!$inLiveCycleCallback) {
+        } elseif (!$inLiveCycleCallback) {
             $mangoBankAccount = $this->createBankAccount($bankInformation);
         }
 
@@ -94,7 +89,7 @@ class BankInformationHelper
         $event = new BankInformationEvent($bankAccount, $bankInformation->getUser(), $bankInformation);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_BANKINFORMATION, $event);
 
-        if(!$inLiveCycleCallback) {
+        if (!$inLiveCycleCallback) {
             $this->entityManager->persist($bankInformation);
             $this->entityManager->flush();
         }
@@ -136,8 +131,7 @@ class BankInformationHelper
      */
     public function updateOrPersistBankAccount(BankInformationInterface $bankInformation)
     {
-        if(!$bankInformation->getMangoBankAccountId())
-        {
+        if (!$bankInformation->getMangoBankAccountId()) {
             return $this->createBankAccount($bankInformation, true);
         }
         // cant update a bank account activated
@@ -147,6 +141,23 @@ class BankInformationHelper
 //        }
     }
 
+    public function disableBankAccount(BankInformationInterface $bankInformation)
+    {
+        $mangoUser = $this->userHelper->findOrCreateMangoUser($bankInformation->getUser());
+
+        $bankAccountId = $bankInformation->getMangoBankAccountId();
+        $bankAccount = $this->mangopayHelper->Users->GetBankAccount($mangoUser->Id, $bankAccountId);
+
+        //desactivate before update
+        $bankAccount->Active = false;
+
+        $bankAccount = $this->mangopayHelper->Users->UpdateBankAccount($mangoUser->Id, $bankAccount);
+
+        $event = new BankInformationEvent($bankAccount, $bankInformation->getUser(), $bankInformation);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::DISABLE_BANKINFORMATION, $event);
+
+        return $bankAccount;
+    }
 
     private function updateBankAccount(BankInformationInterface $bankInformation, $inLiveCycleCallback = false)
     {
@@ -169,21 +180,21 @@ class BankInformationHelper
 
 //        try
 //        {
-            $bankAccount = $this->mangopayHelper->Users->UpdateBankAccount($mangoUser->Id, $bankAccount);
+        $bankAccount = $this->mangopayHelper->Users->UpdateBankAccount($mangoUser->Id, $bankAccount);
 
-            //reactivate
-            $bankAccount->Active = true;
-            $bankAccount = $this->mangopayHelper->Users->UpdateBankAccount($mangoUser->Id, $bankAccount);
+        //reactivate
+        $bankAccount->Active = true;
+        $bankAccount = $this->mangopayHelper->Users->UpdateBankAccount($mangoUser->Id, $bankAccount);
 
-            $event = new BankInformationEvent($bankAccount, $bankInformation->getUser(), $bankInformation);
-            $this->dispatcher->dispatch(TroopersMangopayEvents::UPDATE_BANKINFORMATION, $event);
+        $event = new BankInformationEvent($bankAccount, $bankInformation->getUser(), $bankInformation);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::UPDATE_BANKINFORMATION, $event);
 
-            if(!$inLiveCycleCallback) {
-                $this->entityManager->persist($bankInformation);
-                $this->entityManager->flush();
-            }
+        if (!$inLiveCycleCallback) {
+            $this->entityManager->persist($bankInformation);
+            $this->entityManager->flush();
+        }
 
-            return $bankAccount;
+        return $bankAccount;
 //        } catch (ResponseException $e) {
 //
 //            Logs::Debug('MangoPay\ResponseException Code', $e->GetCode());
@@ -192,23 +203,5 @@ class BankInformationHelper
 //            1/0;
 //
 //        }
-    }
-
-    public function disableBankAccount(BankInformationInterface $bankInformation)
-    {
-        $mangoUser = $this->userHelper->findOrCreateMangoUser($bankInformation->getUser());
-
-        $bankAccountId = $bankInformation->getMangoBankAccountId();
-        $bankAccount = $this->mangopayHelper->Users->GetBankAccount($mangoUser->Id, $bankAccountId);
-
-        //desactivate before update
-        $bankAccount->Active = false;
-
-        $bankAccount = $this->mangopayHelper->Users->UpdateBankAccount($mangoUser->Id, $bankAccount);
-
-        $event = new BankInformationEvent($bankAccount, $bankInformation->getUser(), $bankInformation);
-        $this->dispatcher->dispatch(TroopersMangopayEvents::DISABLE_BANKINFORMATION, $event);
-
-        return $bankAccount;
     }
 }

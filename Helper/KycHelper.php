@@ -35,19 +35,6 @@ class KycHelper
         $this->userHelper = $userHelper;
     }
 
-    public function findOrCreateKycDocument(KycDocumentInterface $kycDocument)
-    {
-        if ($documentId = $kycDocument->getKycDocumentId()) {
-            $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
-            $mangoDocument = $this->mangopayHelper->Users->GetKycDocument($mangoUser->Id, $documentId);
-        }
-        else {
-            $mangoDocument = $this->createKycDocument($kycDocument);
-        }
-
-        return $mangoDocument;
-    }
-
     public function findKycDocument(KycDocumentInterface $kycDocument)
     {
         $mangoDocument = null;
@@ -78,25 +65,6 @@ class KycHelper
         return $kycDocument;
     }
 
-    public function createKycDocument(KycDocumentInterface $kycDocument)
-    {
-        $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
-        $mangoDocument = new KycDocument();
-        $mangoDocument->Type = $kycDocument->getType();
-
-        $mangoDocument = $this->mangopayHelper->Users->CreateKycDocument($mangoUser->Id, $mangoDocument);
-
-        $kycDocument->setKycDocumentId($mangoDocument->Id);
-
-        $event = new KycEvent($mangoDocument, $kycDocument->getUser(), $kycDocument);
-        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_KYCDOCUMENT, $event);
-
-        $this->entityManager->persist($kycDocument);
-        $this->entityManager->flush();
-
-        return $mangoDocument;
-    }
-
     public function createKycPage(KycDocumentInterface $kycDocument, KycPageInterface $kycPage)
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
@@ -109,6 +77,37 @@ class KycHelper
 
         $event = new KycEvent($mangoDocument, $kycDocument->getUser(), $kycDocument);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_KYCPAGE, $event);
+
+        $this->entityManager->persist($kycDocument);
+        $this->entityManager->flush();
+
+        return $mangoDocument;
+    }
+
+    public function findOrCreateKycDocument(KycDocumentInterface $kycDocument)
+    {
+        if ($documentId = $kycDocument->getKycDocumentId()) {
+            $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
+            $mangoDocument = $this->mangopayHelper->Users->GetKycDocument($mangoUser->Id, $documentId);
+        } else {
+            $mangoDocument = $this->createKycDocument($kycDocument);
+        }
+
+        return $mangoDocument;
+    }
+
+    public function createKycDocument(KycDocumentInterface $kycDocument)
+    {
+        $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
+        $mangoDocument = new KycDocument();
+        $mangoDocument->Type = $kycDocument->getType();
+
+        $mangoDocument = $this->mangopayHelper->Users->CreateKycDocument($mangoUser->Id, $mangoDocument);
+
+        $kycDocument->setKycDocumentId($mangoDocument->Id);
+
+        $event = new KycEvent($mangoDocument, $kycDocument->getUser(), $kycDocument);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_KYCDOCUMENT, $event);
 
         $this->entityManager->persist($kycDocument);
         $this->entityManager->flush();
@@ -138,8 +137,7 @@ class KycHelper
         $mangoDocument = $this->findOrCreateKycDocument($kycDocument);
         $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
 
-        foreach ($kycDocument->getPages() as $page)
-        {
+        foreach ($kycDocument->getPages() as $page) {
             /**
              * @var KycPageInterface $page
              */

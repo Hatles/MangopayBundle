@@ -41,8 +41,7 @@ class TransactionHelper
         $mangoTransaction = null;
 
         if ($mangoUserId = $transaction->getMangoTransactionId() && $type = $transaction->getType()) {
-            switch ($type)
-            {
+            switch ($type) {
                 case TransactionInterface::TYPE_PAYIN:
                     $mangoTransaction = $this->mangopayHelper->PayIns->Get($mangoUserId);
                     break;
@@ -53,9 +52,8 @@ class TransactionHelper
                     $mangoTransaction = $this->mangopayHelper->Transfers->Get($mangoUserId);
                     break;
                 default:
-                    throw new NotFoundHttpException("unknown transaction type :".$type);
-            }
-            ;
+                    throw new NotFoundHttpException("unknown transaction type :" . $type);
+            };
         }
 
         return $mangoTransaction;

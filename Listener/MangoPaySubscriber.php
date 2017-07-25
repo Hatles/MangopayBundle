@@ -47,14 +47,13 @@ class MangoPaySubscriber implements EventSubscriber
         ];
     }
 
-    public function postLoad(LifecycleEventArgs $event) {
+    public function postLoad(LifecycleEventArgs $event)
+    {
         $entity = $event->getEntity();
 
-        if($this->reader->isMangoPayEntity($entity))
-        {
+        if ($this->reader->isMangoPayEntity($entity)) {
             dump($entity);
-            if($mangoEntity = $this->handler->getMangoPayEntity($entity, true))
-            {
+            if ($mangoEntity = $this->handler->getMangoPayEntity($entity, true)) {
                 $this->reader->addLinkedEntity($entity);
                 foreach ($this->reader->getMangoPayEntityFields($entity) as $property => $annotation) {
                     $this->handler->setFieldFromMangoPayEntity($entity, $property, $mangoEntity, $annotation);
@@ -63,11 +62,8 @@ class MangoPaySubscriber implements EventSubscriber
         }
     }
 
-    public function prePersist(LifecycleEventArgs $event) {
-        $this->prePersistOrUpdate($event);
-    }
-
-    public function preUpdate(LifecycleEventArgs $event) {
+    public function prePersist(LifecycleEventArgs $event)
+    {
         $this->prePersistOrUpdate($event);
     }
 
@@ -75,18 +71,21 @@ class MangoPaySubscriber implements EventSubscriber
     {
         $entity = $event->getEntity();
 
-        if($this->reader->isMangoPayEntityPersistableOrUpdatable($entity))
-        {
+        if ($this->reader->isMangoPayEntityPersistableOrUpdatable($entity)) {
             $this->handler->prePersistOrUpdateMangoPayEntity($entity);
         }
+    }
+
+    public function preUpdate(LifecycleEventArgs $event)
+    {
+        $this->prePersistOrUpdate($event);
     }
 
     public function postRemove(LifecycleEventArgs $event)
     {
         $entity = $event->getEntity();
 
-        if($this->reader->isMangoPayEntity($entity))
-        {
+        if ($this->reader->isMangoPayEntity($entity)) {
             $this->handler->disableEntity($entity);
         }
     }

@@ -57,7 +57,7 @@ class CardPreAuthorisation
      * of the Author.DebitedFunds = Fees + CreditedFunds
      * (amount received on wallet).
      *
-     *  @var \MangoPay\Money
+     * @var \MangoPay\Money
      * @ORM\Column(name="debited_funds", type="integer", nullable=true)
      */
     protected $debitedFunds;

@@ -115,13 +115,13 @@ class BankwireHelper
         $paymentDetails->DeclaredFees = $fees;
         $payin->PaymentDetails = $paymentDetails;
         $payin->AuthorId = $mangoUser->Id;
-        if($creditedUserId !== null)
+        if ($creditedUserId !== null)
             $payin->CreditedUserId = $creditedUserId;
 
         $bankWire = $this->mangopayHelper->PayIns->Create($payin);
 
         dump($bankWire);
-        1/0;
+        1 / 0;
 
         if (property_exists($bankWire, 'Status') && $bankWire->Status != 'FAILED') {
             $event = new PayInEvent($payin);
@@ -134,7 +134,7 @@ class BankwireHelper
         $this->dispatcher->dispatch(TroopersMangopayEvents::ERROR_BANK_WIRE_PAY_IN, $event);
 
         throw new MangopayPayInCreationException($this->translator->trans(
-            'mangopay.error.'.$bankWire->ResultCode,
+            'mangopay.error.' . $bankWire->ResultCode,
             [], 'messages'
         ));
     }

@@ -52,8 +52,8 @@ class WalletHelper
 
     /**
      * @param UserNaturalInterface $user
-     * @param string        $description
-     * @param string        $currency
+     * @param string $description
+     * @param string $currency
      *
      * @return Wallet
      */
@@ -61,13 +61,11 @@ class WalletHelper
     {
         $walletCur = null;
 
-        foreach ($user->getWallets() as $wallet)
-        {
+        foreach ($user->getWallets() as $wallet) {
             if ($walletId = $wallet->getMangoWalletId()) {
                 $walletTmp = $this->mangopayHelper->Wallets->get($walletId);
 
-                if($walletTmp->Currency == $currency)
-                {
+                if ($walletTmp->Currency == $currency) {
                     $walletCur = $walletTmp;
                     break;
                 }
@@ -79,25 +77,6 @@ class WalletHelper
         }
 
         return $walletCur;
-    }
-
-    /**
-     * @param WalletInterface $wallet
-     * @param bool $inLiveCycleCallback
-     * @return Wallet|null
-     */
-    public function findOrCreateWallet(WalletInterface $wallet, $inLiveCycleCallback = false)
-    {
-        $mangoWallet = null;
-
-        if ($walletId = $wallet->getMangoWalletId()) {
-            $mangoWallet = $this->mangopayHelper->Wallets->get($walletId);
-        }
-        elseif(!$inLiveCycleCallback) {
-            $mangoWallet = $this->createWallet($wallet);
-        }
-
-        return $mangoWallet;
     }
 
     /**
@@ -128,6 +107,24 @@ class WalletHelper
     /**
      * @param WalletInterface $wallet
      * @param bool $inLiveCycleCallback
+     * @return Wallet|null
+     */
+    public function findOrCreateWallet(WalletInterface $wallet, $inLiveCycleCallback = false)
+    {
+        $mangoWallet = null;
+
+        if ($walletId = $wallet->getMangoWalletId()) {
+            $mangoWallet = $this->mangopayHelper->Wallets->get($walletId);
+        } elseif (!$inLiveCycleCallback) {
+            $mangoWallet = $this->createWallet($wallet);
+        }
+
+        return $mangoWallet;
+    }
+
+    /**
+     * @param WalletInterface $wallet
+     * @param bool $inLiveCycleCallback
      * @return Wallet
      */
     public function createWallet(WalletInterface $wallet, $inLiveCycleCallback = false)
@@ -145,12 +142,25 @@ class WalletHelper
         $event = new WalletEvent($mangoWallet, $wallet->getUser(), $wallet);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_WALLET, $event);
 
-        if(!$inLiveCycleCallback) {
+        if (!$inLiveCycleCallback) {
             $this->entityManager->persist($wallet);
             $this->entityManager->flush();
         }
 
         return $mangoWallet;
+    }
+
+    /**
+     * @param WalletInterface $wallet
+     * @return \MangoPay\Wallet
+     */
+    public function updateOrPersistWallet(WalletInterface $wallet)
+    {
+        if (!$wallet->getMangoWalletId()) {
+            return $this->createWallet($wallet, true);
+        } else {
+            return $this->updateWallet($wallet, true);
+        }
     }
 
     /**
@@ -173,28 +183,12 @@ class WalletHelper
         $event = new WalletEvent($mangoWallet, $wallet->getUser(), $wallet);
         $this->dispatcher->dispatch(TroopersMangopayEvents::UPDATE_WALLET, $event);
 
-        if(!$inLiveCycleCallback) {
+        if (!$inLiveCycleCallback) {
             $this->entityManager->persist($wallet);
             $this->entityManager->flush();
         }
 
         return $mangoWallet;
-    }
-
-    /**
-     * @param WalletInterface $wallet
-     * @return \MangoPay\Wallet
-     */
-    public function updateOrPersistWallet(WalletInterface $wallet)
-    {
-        if(!$wallet->getMangoWalletId())
-        {
-            return $this->createWallet($wallet, true);
-        }
-        else
-        {
-            return $this->updateWallet($wallet, true);
-        }
     }
 
     public function getTransactions($walletId)

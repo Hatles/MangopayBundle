@@ -11,13 +11,11 @@ use MangoPay\PayInPaymentDetailsPreAuthorized;
 use MangoPay\User;
 use MangoPay\Wallet;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\DataCollectorTranslator;
 use Troopers\MangopayBundle\Entity\CardPreAuthorisation;
 use Troopers\MangopayBundle\Entity\Order;
-use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Event\CardRegistrationEvent;
 use Troopers\MangopayBundle\Event\PayInEvent;
@@ -61,7 +59,7 @@ class PaymentHelper
             'troopers_mangopaybundle_payment_finalize',
             [
                 'orderId' => $order->getId(),
-                'cardId'  => $mangoCardRegistration->Id,
+                'cardId' => $mangoCardRegistration->Id,
             ]
         );
 
@@ -69,13 +67,18 @@ class PaymentHelper
 
         return [
             'callback' => 'payAjaxOrRedirect("'
-                .$redirect.'", "'
-                .$redirect.'", "'
-                .$cardRegistrationURL.'", "'
-                .$preregistrationData.'", "'
-                .$accessKey.'", "'
-                .$successRedirect.'")',
+                . $redirect . '", "'
+                . $redirect . '", "'
+                . $cardRegistrationURL . '", "'
+                . $preregistrationData . '", "'
+                . $accessKey . '", "'
+                . $successRedirect . '")',
         ];
+    }
+
+    public function generateSuccessUrl($orderId)
+    {
+        return $this->router->generate('troopers_mangopaybundle_payment_success', ['orderId' => $orderId]);
     }
 
     /**
@@ -90,7 +93,7 @@ class PaymentHelper
     public function updateCardRegistration($cardId, $data, $errorCode)
     {
         $cardRegister = $this->mangopayHelper->CardRegistrations->Get($cardId);
-        $cardRegister->RegistrationData = $data ? 'data='.$data : 'errorCode='.$errorCode;
+        $cardRegister->RegistrationData = $data ? 'data=' . $data : 'errorCode=' . $errorCode;
 
         $updatedCardRegister = $this->mangopayHelper->CardRegistrations->Update($cardRegister);
 
@@ -150,7 +153,8 @@ class PaymentHelper
         Wallet $wallet,
         $feesAmount,
         $amount = null
-    ) {
+    )
+    {
         if (!$amount) {
             $amount = $preAuthorisation->getDebitedFunds();
         }
@@ -186,7 +190,7 @@ class PaymentHelper
         $this->dispatcher->dispatch(TroopersMangopayEvents::ERROR_PAY_IN, $event);
 
         throw new MangopayPayInCreationException($this->translator->trans(
-            'mangopay.error.'.$payIn->ResultCode,
+            'mangopay.error.' . $payIn->ResultCode,
             [], 'messages'
         ));
     }
@@ -201,10 +205,5 @@ class PaymentHelper
             $event = new PreAuthorisationEvent($order, $mangoCardPreAuthorisation);
             $this->dispatcher->dispatch(TroopersMangopayEvents::CANCEL_CARD_PREAUTHORISATION, $event);
         }
-    }
-
-    public function generateSuccessUrl($orderId)
-    {
-        return $this->router->generate('troopers_mangopaybundle_payment_success', ['orderId' => $orderId]);
     }
 }

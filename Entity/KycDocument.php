@@ -8,12 +8,8 @@
 
 namespace Troopers\MangopayBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Troopers\MangopayBundle\Annotation\MangoPayEntity;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 
 /**
@@ -62,6 +58,11 @@ abstract class KycDocument implements KycDocumentInterface
      */
     protected $refusedReasonType;
 
+    public static function getTypes()
+    {
+        return array(self::TYPE_ADDRESS_PROOF, self::TYPE_ARTICLES_OF_ASSOCIATION, self::TYPE_IDENTITY_PROOF, self::TYPE_REGISTRATION_PROOF, self::TYPE_SHAREHOLDER_DECLARATION);
+    }
+
     /**
      * @return int
      */
@@ -76,27 +77,6 @@ abstract class KycDocument implements KycDocumentInterface
     public function setKycDocumentId($kycDocumentId)
     {
         $this->kycDocumentId = $kycDocumentId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
-    public static function getTypes()
-    {
-        return array(self::TYPE_ADDRESS_PROOF, self::TYPE_ARTICLES_OF_ASSOCIATION, self::TYPE_IDENTITY_PROOF, self::TYPE_REGISTRATION_PROOF, self::TYPE_SHAREHOLDER_DECLARATION);
     }
 
     /**
@@ -166,5 +146,21 @@ abstract class KycDocument implements KycDocumentInterface
     function __toString()
     {
         return $this->getType() ?: "TYPE_NULL";
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
     }
 }

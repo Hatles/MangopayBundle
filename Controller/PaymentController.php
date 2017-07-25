@@ -2,13 +2,8 @@
 
 namespace Troopers\MangopayBundle\Controller;
 
-use MangoPay\CardRegistration;
-use MangoPay\PayIn;
-use MLC\UserBundle\Entity\UserLegal;
-use MLC\UserBundle\Form\Type\LegalUserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,16 +53,16 @@ class PaymentController extends Controller
         return $this->render(
             'TroopersMangopayBundle::cardPayment.html.twig',
             [
-                'form'  => $form->createView(),
+                'form' => $form->createView(),
                 'order' => $order,
             ]
         );
     }
 
     /**
-     * @param Request     $request     The request
+     * @param Request $request The request
      * @param Reservation $reservation The reservation
-     * @param int         $cardId      The cardId
+     * @param int $cardId The cardId
      *
      * This method is called by paymentAction callback, with the authorized cardId as argument.
      * It creates a PreAuthorisation with reservation price, and store its id in the Reservation.
@@ -92,8 +87,9 @@ class PaymentController extends Controller
         // Handle error
         if ((property_exists($updatedCardRegister, 'ResultCode')
                 && $updatedCardRegister->ResultCode !== '000000')
-            || $updatedCardRegister->Status == 'ERROR') {
-            $errorMessage = $this->get('translator')->trans('mangopay.error.'.$updatedCardRegister->ResultCode);
+            || $updatedCardRegister->Status == 'ERROR'
+        ) {
+            $errorMessage = $this->get('translator')->trans('mangopay.error.' . $updatedCardRegister->ResultCode);
 
             return new JsonResponse([
                 'success' => false,
@@ -106,7 +102,7 @@ class PaymentController extends Controller
 
         // Handle error
         if ((property_exists($preAuth, 'Code') && $preAuth->Code !== 200) || $preAuth->Status == 'FAILED') {
-            $errorMessage = $this->get('translator')->trans('mangopay.error.'.$preAuth->ResultCode);
+            $errorMessage = $this->get('translator')->trans('mangopay.error.' . $preAuth->ResultCode);
 
             return new JsonResponse([
                 'success' => false,
@@ -116,7 +112,7 @@ class PaymentController extends Controller
         // Handle secure mode
         if (property_exists($preAuth, 'SecureModeNeeded') && $preAuth->SecureModeNeeded == 1) {
             return new JsonResponse([
-                'success'  => true,
+                'success' => true,
                 'redirect' => $preAuth->SecureModeRedirectURL,
             ]);
         }
@@ -145,7 +141,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * @param Request     $request     The request
+     * @param Request $request The request
      * @param Reservation $reservation The reservation
      *
      * This method is called by paymentFinalizeActionif 3dsecure is required. 3DSecure is needed when 250€ are reached
@@ -169,7 +165,7 @@ class PaymentController extends Controller
             if (property_exists($preAuth, 'Code')) {
                 $this->get('session')->getFlashBag()->add(
                     'danger',
-                    $this->get('translator')->trans('mangopay.error.'.$preAuth->Code)
+                    $this->get('translator')->trans('mangopay.error.' . $preAuth->Code)
                 );
             } else {
                 $this->get('session')->getFlashBag()->add('error', $preAuth->ResultMessage);
@@ -203,7 +199,7 @@ class PaymentController extends Controller
 
     /**
      * @param Request $request The request
-     * @param int     $orderId
+     * @param int $orderId
      *
      * This method shows the congratulations
      *

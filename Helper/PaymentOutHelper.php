@@ -36,35 +36,6 @@ class PaymentOutHelper
 
     /**
      * @param BankInformationInterface $bankInformation
-     * @return PayOutPaymentDetailsBankWire
-     */
-    public function buildPayOutPaymentDetailsBankWire(BankInformationInterface $bankInformation)
-    {
-        $meanOfPaymentDetails = new PayOutPaymentDetailsBankWire();
-        if (null == $bankAccountId = $bankInformation->getMangoBankAccountId()) {
-            throw new NotFoundHttpException(sprintf('bankAccount not found for bankInfo of user\'s id : %s', $bankInformation->getUser()->getId()));
-        }
-        $meanOfPaymentDetails->BankAccountId = $bankAccountId;
-
-        return $meanOfPaymentDetails;
-    }
-
-    /**
-     * @param string $amount
-     * @param string $currency
-     * @return Money
-     */
-    public function buildMoney($amount = '0', $currency = 'EUR')
-    {
-        $money = new Money();
-        $money->Currency = $currency;
-        $money->Amount = $amount;
-
-        return $money;
-    }
-
-    /**
-     * @param BankInformationInterface $bankInformation
      * @param $currency
      * @param $debitedFunds
      * @param string $fees
@@ -86,5 +57,34 @@ class PaymentOutHelper
         $payOut->Fees = $fees;
 
         return $this->mangopayHelper->PayOuts->Create($payOut);
+    }
+
+    /**
+     * @param string $amount
+     * @param string $currency
+     * @return Money
+     */
+    public function buildMoney($amount = '0', $currency = 'EUR')
+    {
+        $money = new Money();
+        $money->Currency = $currency;
+        $money->Amount = $amount;
+
+        return $money;
+    }
+
+    /**
+     * @param BankInformationInterface $bankInformation
+     * @return PayOutPaymentDetailsBankWire
+     */
+    public function buildPayOutPaymentDetailsBankWire(BankInformationInterface $bankInformation)
+    {
+        $meanOfPaymentDetails = new PayOutPaymentDetailsBankWire();
+        if (null == $bankAccountId = $bankInformation->getMangoBankAccountId()) {
+            throw new NotFoundHttpException(sprintf('bankAccount not found for bankInfo of user\'s id : %s', $bankInformation->getUser()->getId()));
+        }
+        $meanOfPaymentDetails->BankAccountId = $bankAccountId;
+
+        return $meanOfPaymentDetails;
     }
 }

@@ -459,7 +459,7 @@
 
             <trans-unit id="mangopay.error.001280" resname="mangopay.error.001280" datatype="plaintext">
                 <source>mangopay.error.001280</source>
-                <target>Carte Bin  non autorisée</target>
+                <target>Carte Bin non autorisée</target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.001401" resname="mangopay.error.001401" datatype="plaintext">
@@ -519,7 +519,7 @@
 
             <trans-unit id="mangopay.error.001909" resname="mangopay.error.001909" datatype="plaintext">
                 <source>mangopay.error.001909</source>
-                <target>Erreur interne au niveau du serveur de la Banque </target>
+                <target>Erreur interne au niveau du serveur de la Banque</target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.001912" resname="mangopay.error.001912" datatype="plaintext">
@@ -684,12 +684,16 @@
 
             <trans-unit id="mangopay.error.002315" resname="mangopay.error.002315" datatype="plaintext">
                 <source>mangopay.error.002315</source>
-                <target>Un commerçant est déjà connecté avec ce nom de la société . Si il ya un problème , contactez le support</target>
+                <target>Un commerçant est déjà connecté avec ce nom de la société . Si il ya un problème , contactez le
+                    support
+                </target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.002316" resname="mangopay.error.002316" datatype="plaintext">
                 <source>mangopay.error.002316</source>
-                <target>L'offre commerciale n'existe pas pour ce distributeur . Si il ya un problème , contactez le support</target>
+                <target>L'offre commerciale n'existe pas pour ce distributeur . Si il ya un problème , contactez le
+                    support
+                </target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.002317" resname="mangopay.error.002317" datatype="plaintext">
@@ -699,7 +703,8 @@
 
             <trans-unit id="mangopay.error.002318" resname="mangopay.error.002318" datatype="plaintext">
                 <source>mangopay.error.002318</source>
-                <target>N'existe pas cette marque , s'il vous plaît vérifier vos paramètres primaires / secondaires</target>
+                <target>N'existe pas cette marque , s'il vous plaît vérifier vos paramètres primaires / secondaires
+                </target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.002319" resname="mangopay.error.002319" datatype="plaintext">
@@ -819,7 +824,7 @@
 
             <trans-unit id="mangopay.error.002517" resname="mangopay.error.002517" datatype="plaintext">
                 <source>mangopay.error.002517</source>
-                <target>Vous ne pouvez pas désactiver certain(s)  porte-monnaie(s) </target>
+                <target>Vous ne pouvez pas désactiver certain(s) porte-monnaie(s)</target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.002518" resname="mangopay.error.002518" datatype="plaintext">
@@ -829,12 +834,12 @@
 
             <trans-unit id="mangopay.error.002519" resname="mangopay.error.002519" datatype="plaintext">
                 <source>mangopay.error.002519</source>
-                <target>Impossible d'activer le(s)  porte-monnaie(s) </target>
+                <target>Impossible d'activer le(s) porte-monnaie(s)</target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.002520" resname="mangopay.error.002520" datatype="plaintext">
                 <source>mangopay.error.002520</source>
-                <target>Vous ne pouvez pas permettre à certain(s)  porte-monnaie (s)</target>
+                <target>Vous ne pouvez pas permettre à certain(s) porte-monnaie (s)</target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.002521" resname="mangopay.error.002521" datatype="plaintext">
@@ -974,7 +979,7 @@
 
             <trans-unit id="mangopay.error.002607" resname="mangopay.error.002607" datatype="plaintext">
                 <source>mangopay.error.002607</source>
-                <target>Profil  Monetic ID invalide </target>
+                <target>Profil Monetic ID invalide</target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.002608" resname="mangopay.error.002608" datatype="plaintext">
@@ -1009,7 +1014,7 @@
 
             <trans-unit id="mangopay.error.002614" resname="mangopay.error.002614" datatype="plaintext">
                 <source>mangopay.error.002614</source>
-                <target>Cclé Luhn invalide </target>
+                <target>Cclé Luhn invalide</target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.002615" resname="mangopay.error.002615" datatype="plaintext">
@@ -1079,7 +1084,7 @@
 
             <trans-unit id="mangopay.error.003004" resname="mangopay.error.003004" datatype="plaintext">
                 <source>mangopay.error.003004</source>
-                <target>Vous ne trouvez pas l'appel verifyEnrollment </target>
+                <target>Vous ne trouvez pas l'appel verifyEnrollment</target>
             </trans-unit>
 
             <trans-unit id="mangopay.error.003005" resname="mangopay.error.003005" datatype="plaintext">
@@ -1142,12 +1147,14 @@
                 <target>Format de code PIN incorrect</target>
             </trans-unit>
 
-            <trans-unit id="troopers_mangopay.card_number.label" resname="troopers_mangopay.card_number.label" datatype="plaintext">
+            <trans-unit id="troopers_mangopay.card_number.label" resname="troopers_mangopay.card_number.label"
+                        datatype="plaintext">
                 <source>troopers_mangopay.card_number.label</source>
                 <target>Format de code PIN incorrect</target>
             </trans-unit>
 
-            <trans-unit id="troopers.mangopay.payment_page.helper_block" resname="troopers.mangopay.payment_page.helper_block" datatype="plaintext">
+            <trans-unit id="troopers.mangopay.payment_page.helper_block"
+                        resname="troopers.mangopay.payment_page.helper_block" datatype="plaintext">
                 <source>troopers.mangopay.payment_page.helper_block</source>
                 <target>todo</target>
             </trans-unit>

@@ -24,7 +24,8 @@ class MangoPayHandler
 
     private $container;
 
-    public function __construct(ContainerInterface $container) {
+    public function __construct(ContainerInterface $container)
+    {
         $this->accessor = PropertyAccess::createPropertyAccessor();
 
         $this->container = $container;
@@ -41,38 +42,15 @@ class MangoPayHandler
     {
         $callback = $annotationField->getLoadableCallback();
 
-        if(is_string($callback))
-        {
-            if(method_exists($entity, $callback) && $entity->$callback())
-            {
+        if (is_string($callback)) {
+            if (method_exists($entity, $callback) && $entity->$callback()) {
                 $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
+            } else {
+                throw new AnnotationException("Loadable callback '" . $callback . "' doesn't exists");
             }
-            else
-            {
-                throw new AnnotationException("Loadable callback '".$callback."' doesn't exists");
-            }
-        }
-        elseif($callback === null || $callback === true)
-        {
+        } elseif ($callback === null || $callback === true) {
             $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
         }
-    }
-
-    public function disableEntity($entity)
-    {
-        //TODO : disable mangoPay entity on remove doctrine entity
-
-        switch(true) {
-//            case $entity instanceof UserInterface:
-//                return $this->container->get('troopers_mangopay.user_helper')->updateOrPersistMangoUser($entity);
-//            case $entity instanceof WalletInterface:
-//                return $this->container->get('troopers_mangopay.wallet_helper')->updateOrPersistWallet($entity);
-            case $entity instanceof BankInformationInterface:
-                return $this->container->get('troopers_mangopay.bank_information_helper')->disableBankAccount($entity);
-        }
-
-        throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
-
     }
 
     /**
@@ -85,17 +63,31 @@ class MangoPayHandler
     {
         $mangoProperty = $annotationField->getName() ?: ucfirst($property);
 
-        if(property_exists($mangoEntity, $mangoProperty))
-        {
+        if (property_exists($mangoEntity, $mangoProperty)) {
             return $mangoEntity->{$mangoProperty};
-        }
-        else
-        {
+        } else {
             //TODO : throw exception invalid property
             return null;
         }
 
 //        throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
+    }
+
+    public function disableEntity($entity)
+    {
+        //TODO : disable mangoPay entity on remove doctrine entity
+
+        switch (true) {
+//            case $entity instanceof UserInterface:
+//                return $this->container->get('troopers_mangopay.user_helper')->updateOrPersistMangoUser($entity);
+//            case $entity instanceof WalletInterface:
+//                return $this->container->get('troopers_mangopay.wallet_helper')->updateOrPersistWallet($entity);
+            case $entity instanceof BankInformationInterface:
+                return $this->container->get('troopers_mangopay.bank_information_helper')->disableBankAccount($entity);
+        }
+
+        throw new \InvalidArgumentException('L\'entity de la classe "' . get_class($entity) . '" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
+
     }
 
     /**
@@ -105,7 +97,7 @@ class MangoPayHandler
      */
     public function getMangoPayEntity($entity, $inLiveCycleCallback = false)
     {
-        switch(true) {
+        switch (true) {
             case $entity instanceof UserInterface:
                 return $this->container->get('troopers_mangopay.user_helper')->findOrCreateMangoUser($entity, $inLiveCycleCallback);
             case $entity instanceof WalletInterface:
@@ -118,12 +110,12 @@ class MangoPayHandler
                 return $this->container->get('troopers_mangopay.kyc_helper')->findKycDocument($entity);
         }
 
-        throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
+        throw new \InvalidArgumentException('L\'entity de la classe "' . get_class($entity) . '" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
     }
 
     public function prePersistOrUpdateMangoPayEntity($entity)
     {
-        switch(true) {
+        switch (true) {
             case $entity instanceof UserInterface:
                 return $this->container->get('troopers_mangopay.user_helper')->updateOrPersistMangoUser($entity);
             case $entity instanceof WalletInterface:
@@ -132,6 +124,6 @@ class MangoPayHandler
                 return $this->container->get('troopers_mangopay.bank_information_helper')->updateOrPersistBankAccount($entity);
         }
 
-        throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
+        throw new \InvalidArgumentException('L\'entity de la classe "' . get_class($entity) . '" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
     }
 }

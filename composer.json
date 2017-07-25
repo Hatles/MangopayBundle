@@ -1,32 +1,35 @@
 {
-    "name": "hatles/mangopay-bundle",
-    "type": "symfony-bundle",
-    "description": "This Bundle include Mangopay php sdk as a service",
-    "keywords": ["mangopay"],
-    "homepage": "http://troopers.agency",
-    "license": "MIT",
-    "minimum-stability": "dev",
-    "authors": [
-        {
-            "name": "Paul Andrieux",
-            "homepage": "https://troopers.agency"
-        }
-    ],
-    "require": {
-        "php": "~5.3|~7",
-        "symfony/framework-bundle": ">=2.3",
-        "mangopay/php-sdk-v2": ">=2.0",
-        "stof/doctrine-extensions-bundle": "~1.2.0",
-        "troopers/ajax-bundle": "^1.3"
-    },
-
-    "autoload": {
-        "psr-0": { "Troopers\\MangopayBundle": "" }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "v2.x-dev"
-        }
-    },
-    "target-dir": "Troopers/MangopayBundle"
+  "name": "hatles/mangopay-bundle",
+  "type": "symfony-bundle",
+  "description": "This Bundle include Mangopay php sdk as a service",
+  "keywords": [
+    "mangopay"
+  ],
+  "homepage": "http://troopers.agency",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Paul Andrieux",
+      "homepage": "https://troopers.agency"
+    }
+  ],
+  "require": {
+    "php": "~5.3|~7",
+    "symfony/framework-bundle": ">=2.3",
+    "mangopay/php-sdk-v2": ">=2.0",
+    "stof/doctrine-extensions-bundle": "~1.2.0",
+    "troopers/ajax-bundle": "^1.3"
+  },
+  "autoload": {
+    "psr-0": {
+      "Troopers\\MangopayBundle": ""
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "v2.x-dev"
+    }
+  },
+  "target-dir": "Troopers/MangopayBundle"
 }

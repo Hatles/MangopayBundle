@@ -13,8 +13,6 @@ use Application\Sonata\ClassificationBundle\Entity\Collection;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\ClassUtils;
-use Troopers\MangopayBundle\Annotation\MangoPayEntity;
-use Troopers\MangopayBundle\Annotation\MangoPayField;
 
 class MangoPayAnnotationReader
 {
@@ -53,6 +51,30 @@ class MangoPayAnnotationReader
     }
 
     /**
+     * Liste les champs mangopay d'une entité (sous forme de tableau associatif)
+     *
+     * @param Object
+     * @return array
+     */
+    public function getMangoPayEntityFields($entity)
+    {
+        $reflection = new \ReflectionClass(get_class($entity));
+
+        if (!$this->isMangoPayEntity($entity)) {
+            return [];
+        }
+
+        $properties = [];
+        foreach ($reflection->getProperties() as $property) {
+            $annotation = $this->reader->getPropertyAnnotation($property, MangoPayField::class);
+            if ($annotation !== null) {
+                $properties[$property->getName()] = $annotation;
+            }
+        }
+        return $properties;
+    }
+
+    /**
      * @param $entity
      * @return null|MangoPayEntity
      */
@@ -66,38 +88,11 @@ class MangoPayAnnotationReader
         return $this->reader->getClassAnnotation($reflection, MangoPayEntity::class);
     }
 
-    /**
-     * Liste les champs mangopay d'une entité (sous forme de tableau associatif)
-     *
-     * @param Object
-     * @return array
-     */
-    public function getMangoPayEntityFields($entity) {
-        $reflection = new \ReflectionClass(get_class($entity));
-
-        if(!$this->isMangoPayEntity($entity))
-        {
-            return [];
-        }
-
-        $properties = [];
-        foreach($reflection->getProperties() as $property) {
-            $annotation = $this->reader->getPropertyAnnotation($property, MangoPayField::class);
-            if ($annotation !== null) {
-                $properties[$property->getName()] = $annotation;
-            }
-        }
-        return $properties;
-    }
-
     public function isMangoPayEntityPersistableOrUpdatable($entity)
     {
-        if($annotation = $this->isMangoPayEntity($entity))
-        {
+        if ($annotation = $this->isMangoPayEntity($entity)) {
             return $annotation->getSupportPersistAndUpdate();
-        }
-        else
-        {
+        } else {
             return false;
         }
     }

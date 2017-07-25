@@ -17,7 +17,7 @@ class KycPageType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array                $options
+     * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -34,7 +34,8 @@ class KycPageType extends AbstractType
         ));
     }
 
-    public function getBlockPrefix() {
+    public function getBlockPrefix()
+    {
         return 'kyc_page_form';
     }
 }

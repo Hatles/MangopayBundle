@@ -2,26 +2,15 @@
 
 namespace Troopers\MangopayBundle\Controller;
 
-use MangoPay\CardRegistration;
-use MangoPay\PayIn;
-use MLC\UserBundle\Entity\UserLegal;
-use MLC\UserBundle\Form\Type\LegalUserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Troopers\MangopayBundle\Entity\Order;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
-use Troopers\MangopayBundle\Event\OrderEvent;
-use Troopers\MangopayBundle\Event\PayInEvent;
-use Troopers\MangopayBundle\Event\PreAuthorisationEvent;
 use Troopers\MangopayBundle\Form\CardType;
-use Troopers\MangopayBundle\OrderEvents;
-use Troopers\MangopayBundle\TroopersMangopayEvents;
 
 /**
  * Manage payment.
@@ -43,8 +32,7 @@ class PaymentDirectController extends Controller
         if (!$transaction instanceof TransactionInterface) {
             throw $this->createNotFoundException('Transaction not found');
         }
-        if($transaction->getStatus() != TransactionInterface::STATUS_CREATED)
-        {
+        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED) {
             throw $this->createNotFoundException('Transaction already succeeded or failed');
         }
 
@@ -66,16 +54,16 @@ class PaymentDirectController extends Controller
         return $this->render(
             'TroopersMangopayBundle::cardDirectPayment.html.twig',
             [
-                'form'  => $form->createView(),
+                'form' => $form->createView(),
                 'transaction' => $transaction,
             ]
         );
     }
 
     /**
-     * @param Request     $request     The request
+     * @param Request $request The request
      * @param Reservation $reservation The reservation
-     * @param int         $cardId      The cardId
+     * @param int $cardId The cardId
      *
      * This method is called by paymentAction callback, with the authorized cardId as argument.
      * It creates a PreAuthorisation with reservation price, and store its id in the Reservation.
@@ -96,8 +84,7 @@ class PaymentDirectController extends Controller
         if (!$transaction instanceof TransactionInterface) {
             throw $this->createNotFoundException('Transaction not found');
         }
-        if($transaction->getStatus() != TransactionInterface::STATUS_CREATED)
-        {
+        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED) {
             throw $this->createNotFoundException('Transaction already succeeded or failed');
         }
 
@@ -110,8 +97,9 @@ class PaymentDirectController extends Controller
         // Handle error
         if ((property_exists($updatedCardRegister, 'ResultCode')
                 && $updatedCardRegister->ResultCode !== '000000')
-            || $updatedCardRegister->Status == 'ERROR') {
-            $errorMessage = $this->get('translator')->trans('mangopay.error.'.$updatedCardRegister->ResultCode);
+            || $updatedCardRegister->Status == 'ERROR'
+        ) {
+            $errorMessage = $this->get('translator')->trans('mangopay.error.' . $updatedCardRegister->ResultCode);
 
             return new JsonResponse([
                 'success' => false,
@@ -132,7 +120,7 @@ class PaymentDirectController extends Controller
 
         // Handle error
         if ((property_exists($payIn, 'Code') && $payIn->Code !== 200) || $payIn->Status == 'FAILED') {
-            $errorMessage = $this->get('translator')->trans('mangopay.error.'.$payIn->ResultCode);
+            $errorMessage = $this->get('translator')->trans('mangopay.error.' . $payIn->ResultCode);
 
             return new JsonResponse([
                 'success' => false,
@@ -143,7 +131,7 @@ class PaymentDirectController extends Controller
         // Handle secure mode
         if (property_exists($payIn->ExecutionDetails, 'SecureModeNeeded') && $payIn->ExecutionDetails->SecureModeNeeded == 1) {
             return new JsonResponse([
-                'success'  => true,
+                'success' => true,
                 'redirect' => $payIn->ExecutionDetails->SecureModeRedirectURL,
             ]);
         }
@@ -172,7 +160,7 @@ class PaymentDirectController extends Controller
     }
 
     /**
-     * @param Request     $request     The request
+     * @param Request $request The request
      * @param Reservation $reservation The reservation
      *
      * This method is called by paymentFinalizeActionif 3dsecure is required. 3DSecure is needed when 250€ are reached
@@ -190,8 +178,7 @@ class PaymentDirectController extends Controller
         if (!$transaction instanceof TransactionInterface) {
             throw $this->createNotFoundException('Transaction not found');
         }
-        if($transaction->getStatus() != TransactionInterface::STATUS_CREATED)
-        {
+        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED) {
             throw $this->createNotFoundException('Transaction already succeeded or failed');
         }
 
@@ -205,7 +192,7 @@ class PaymentDirectController extends Controller
             if (property_exists($payIn, 'Code')) {
                 $this->get('session')->getFlashBag()->add(
                     'danger',
-                    $this->get('translator')->trans('mangopay.error.'.$payIn->Code)
+                    $this->get('translator')->trans('mangopay.error.' . $payIn->Code)
                 );
             } else {
                 $this->get('session')->getFlashBag()->add('error', $payIn->ResultMessage);
@@ -239,7 +226,7 @@ class PaymentDirectController extends Controller
 
     /**
      * @param Request $request The request
-     * @param int     $transactionId
+     * @param int $transactionId
      *
      * This method shows the congratulations
      *
