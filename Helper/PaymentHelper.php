@@ -18,7 +18,7 @@ use Symfony\Component\Translation\DataCollectorTranslator;
 use Troopers\MangopayBundle\Entity\CardPreAuthorisation;
 use Troopers\MangopayBundle\Entity\Order;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
-use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Event\CardRegistrationEvent;
 use Troopers\MangopayBundle\Event\PayInEvent;
 use Troopers\MangopayBundle\Event\PreAuthorisationEvent;
@@ -100,7 +100,7 @@ class PaymentHelper
         return $updatedCardRegister;
     }
 
-    public function createPreAuthorisation(CardRegistration $updatedCardRegister, UserInterface $user, Order $order)
+    public function createPreAuthorisation(CardRegistration $updatedCardRegister, UserNaturalInterface $user, Order $order)
     {
         $card = $this->mangopayHelper->Cards->Get($updatedCardRegister->CardId);
 
@@ -136,7 +136,7 @@ class PaymentHelper
      * execute a pre authorisation.
      *
      * @param CardPreAuthorisation $preAuthorisation
-     * @param UserInterface $buyer
+     * @param UserNaturalInterface $buyer
      * @param Wallet $wallet
      * @param int $feesAmount
      * @param int $amount 0 to 100
@@ -146,7 +146,7 @@ class PaymentHelper
      */
     public function executePreAuthorisation(
         CardPreAuthorisation $preAuthorisation,
-        UserInterface $buyer,
+        UserNaturalInterface $buyer,
         Wallet $wallet,
         $feesAmount,
         $amount = null

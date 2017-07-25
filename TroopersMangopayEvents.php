@@ -10,6 +10,11 @@ final class TroopersMangopayEvents
     const NEW_USER = 'troopers_mangopay.user.new';
 
     /**
+     * The NEW_USER_LEGAL event occurs when a user legal is created.
+     */
+    const NEW_USER_LEGAL = 'troopers_mangopay.user_legal.new';
+
+    /**
      * The NEW_WALLET event occurs when a wallet is created.
      */
     const NEW_WALLET = 'troopers_mangopay.wallet.new';

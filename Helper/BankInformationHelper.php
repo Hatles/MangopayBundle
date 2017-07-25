@@ -12,7 +12,7 @@ use MangoPay\User;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
-use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Event\BankInformationEvent;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
 
@@ -102,7 +102,7 @@ class BankInformationHelper
         return $bankAccount;
     }
 
-    public function createBankAccountForUser(UserInterface $user, $iban)
+    public function createBankAccountForUser(UserNaturalInterface $user, $iban)
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($user);
 

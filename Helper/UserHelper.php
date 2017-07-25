@@ -7,6 +7,8 @@ use MangoPay\Address;
 use MangoPay\UserNatural;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserLegalInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Event\UserEvent;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
 
@@ -18,12 +20,14 @@ class UserHelper
     private $mangopayHelper;
     private $entityManager;
     private $dispatcher;
+    private $userLegalHelper;
 
-    public function __construct(MangopayHelper $mangopayHelper, EntityManager $entityManager, EventDispatcherInterface $dispatcher)
+    public function __construct(MangopayHelper $mangopayHelper, EntityManager $entityManager, EventDispatcherInterface $dispatcher, UserLegalHelper $userLegalHelper)
     {
         $this->mangopayHelper = $mangopayHelper;
         $this->entityManager = $entityManager;
         $this->dispatcher = $dispatcher;
+        $this->userLegalHelper = $userLegalHelper;
     }
 
     /**
@@ -38,18 +42,43 @@ class UserHelper
         if ($mangoUserId = $user->getMangoUserId()) {
             $mangoUser = $this->mangopayHelper->Users->get($mangoUserId);
         } elseif(!$inLiveCycleCallback) {
-            $mangoUser = $this->createMangoUser($user);
+            if($user instanceof UserNaturalInterface)
+            {
+                $mangoUser = $this->createMangoUser($user, $inLiveCycleCallback);
+            }
+            elseif ($user instanceof UserLegalInterface)
+            {
+                $mangoUser = $this->userLegalHelper->createMangoUserLegal($user, $inLiveCycleCallback);
+            }
         }
 
         return $mangoUser;
     }
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      * @param bool $inLiveCycleCallback
      * @return \MangoPay\UserLegal|UserNatural
      */
-    public function createMangoUser(UserInterface $user, $inLiveCycleCallback = false)
+    public function findOrCreateMangoUserNatural(UserNaturalInterface $user, $inLiveCycleCallback = false)
+    {
+        $mangoUser = null;
+
+        if ($mangoUserId = $user->getMangoUserId()) {
+            $mangoUser = $this->mangopayHelper->Users->GetNatural($mangoUserId);
+        } elseif(!$inLiveCycleCallback) {
+            $mangoUser = $this->createMangoUser($user, $inLiveCycleCallback);
+        }
+
+        return $mangoUser;
+    }
+
+    /**
+     * @param UserNaturalInterface $user
+     * @param bool $inLiveCycleCallback
+     * @return \MangoPay\UserLegal|UserNatural
+     */
+    public function createMangoUser(UserNaturalInterface $user, $inLiveCycleCallback = false)
     {
         $birthday = null;
         if ($user->getBirthDay() instanceof \Datetime) {
@@ -82,18 +111,18 @@ class UserHelper
     }
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      * @param bool $inLiveCycleCallback
      * @return \MangoPay\UserLegal|UserNatural
      */
-    public function updateMangoUser(UserInterface $user, $inLiveCycleCallback = false)
+    public function updateMangoUser(UserNaturalInterface $user, $inLiveCycleCallback = false)
     {
         $birthday = null;
         if ($user->getBirthDay() instanceof \Datetime) {
             $birthday = $user->getBirthDay()->getTimestamp();
         }
         $mangoUserId = $user->getMangoUserId();
-        $mangoUser = $this->mangopayHelper->Users->get($mangoUserId);
+        $mangoUser = $this->mangopayHelper->Users->GetNatural($mangoUserId);
 
         $mangoUser->Email = $user->getEmail();
         $mangoUser->FirstName = $user->getFirstname();
@@ -117,10 +146,10 @@ class UserHelper
     }
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      * @return \MangoPay\UserLegal|UserNatural
      */
-    public function updateOrPersistMangoUser(UserInterface $user)
+    public function updateOrPersistMangoUserNatural(UserNaturalInterface $user)
     {
         if(!$user->getId() or !$user->getMangoUserId())
         {
@@ -130,6 +159,39 @@ class UserHelper
         {
             return $this->updateMangoUser($user, true);
         }
+    }
+
+    /**
+     * @param UserInterface $user
+     * @return \MangoPay\UserLegal|UserNatural
+     */
+    public function updateOrPersistMangoUser(UserInterface $user)
+    {
+
+        if(!$user->getId() or !$user->getMangoUserId())
+        {
+            if($user instanceof UserNaturalInterface)
+            {
+                return $this->createMangoUser($user, true);
+            }
+            elseif ($user instanceof UserLegalInterface)
+            {
+                return $this->userLegalHelper->createMangoUserLegal($user, true);
+            }
+        }
+        else
+        {
+            if($user instanceof UserNaturalInterface)
+            {
+                return $this->updateMangoUser($user, true);
+            }
+            elseif ($user instanceof UserLegalInterface)
+            {
+                return $this->userLegalHelper->updateMangoUserLegal($user, true);
+            }
+        }
+
+        return null;
     }
 
     public function getTransactions($userId)

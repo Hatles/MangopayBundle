@@ -5,7 +5,7 @@ namespace Troopers\MangopayBundle\Helper;
 use Doctrine\ORM\EntityManager;
 use MangoPay\Wallet;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
 use Troopers\MangopayBundle\Event\WalletEvent;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
@@ -51,13 +51,13 @@ class WalletHelper
     }
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      * @param string        $description
      * @param string        $currency
      *
      * @return Wallet
      */
-    public function findOrCreateWalletWithCurrency(UserInterface $user, $currency, $description = 'current wallet')
+    public function findOrCreateWalletWithCurrency(UserNaturalInterface $user, $currency, $description = 'current wallet')
     {
         $walletCur = null;
 
@@ -101,12 +101,12 @@ class WalletHelper
     }
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      * @param string $currency
      * @param string $description
      * @return Wallet
      */
-    public function createWalletForUser(UserInterface $user, $currency, $description = 'current wallet')
+    public function createWalletForUser(UserNaturalInterface $user, $currency, $description = 'current wallet')
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($user);
         $mangoWallet = new Wallet();

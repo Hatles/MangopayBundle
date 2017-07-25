@@ -5,7 +5,7 @@ namespace Troopers\MangopayBundle\Event;
 use MangoPay\BankAccount;
 use Symfony\Component\EventDispatcher\Event;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
-use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 
 class BankInformationEvent extends Event
 {
@@ -15,7 +15,7 @@ class BankInformationEvent extends Event
     private $bankAccount;
 
     /**
-     * @var UserInterface
+     * @var UserNaturalInterface
      */
     private $user;
 
@@ -27,10 +27,10 @@ class BankInformationEvent extends Event
     /**
      * BankInformationEvent constructor.
      * @param BankAccount $bankAccount
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      * @param BankInformationInterface $bankInformation
      */
-    public function __construct(BankAccount $bankAccount, UserInterface $user, BankInformationInterface $bankInformation)
+    public function __construct(BankAccount $bankAccount, UserNaturalInterface $user, BankInformationInterface $bankInformation)
     {
         $this->bankAccount = $bankAccount;
         $this->user = $user;
@@ -54,7 +54,7 @@ class BankInformationEvent extends Event
     }
 
     /**
-     * @return UserInterface
+     * @return UserNaturalInterface
      */
     public function getUser()
     {
@@ -62,7 +62,7 @@ class BankInformationEvent extends Event
     }
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      */
     public function setUser($user)
     {

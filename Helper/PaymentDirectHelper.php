@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\Transaction;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
-use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
 use Troopers\MangopayBundle\Event\CardRegistrationEvent;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
@@ -40,10 +40,10 @@ class PaymentDirectHelper
     }
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      * @return PayInPaymentDetailsCard
      */
-    public function buildPayInPaymentDetailsCard(UserInterface $user)
+    public function buildPayInPaymentDetailsCard(UserNaturalInterface $user)
     {
         $paymentDetails = new PayInPaymentDetailsCard();
         $paymentDetails->CardType = 'CB_VISA_MASTERCARD';
@@ -68,14 +68,14 @@ class PaymentDirectHelper
     }
 
     /**
-     * @param UserInterface $author
-     * @param UserInterface $userCredited
+     * @param UserNaturalInterface $author
+     * @param UserNaturalInterface $userCredited
      * @param string $currency
      * @param int $amount
      * @param int $fees
      * @return TransactionInterface
      */
-    public function buildTransactionWithCurrency(UserInterface $author, UserInterface $userCredited, $currency, $amount, $fees = 0)
+    public function buildTransactionWithCurrency(UserNaturalInterface $author, UserNaturalInterface $userCredited, $currency, $amount, $fees = 0)
     {
         $class = $this->container->getParameter('troopers_mangopay.transaction.class');
 
@@ -92,13 +92,13 @@ class PaymentDirectHelper
     }
 
     /**
-     * @param UserInterface $author
+     * @param UserNaturalInterface $author
      * @param WalletInterface $wallet
      * @param int $amount
      * @param int $fees
      * @return TransactionInterface
      */
-    public function buildTransaction(UserInterface $author, WalletInterface $wallet, $amount, $fees = 0)
+    public function buildTransaction(UserNaturalInterface $author, WalletInterface $wallet, $amount, $fees = 0)
     {
         $class = $this->container->getParameter('troopers_mangopay.transaction.class');
 
@@ -115,7 +115,7 @@ class PaymentDirectHelper
     }
 
     /**
-     * @param UserInterface $author
+     * @param UserNaturalInterface $author
      * @param WalletInterface $wallet
      * @param CardRegistration $cardRegistration
      * @param $amount
@@ -125,7 +125,7 @@ class PaymentDirectHelper
      * @return PayIn
      */
     public function executeTransaction(
-        UserInterface $author,
+        UserNaturalInterface $author,
         WalletInterface $wallet,
         CardRegistration $cardRegistration,
         $amount,

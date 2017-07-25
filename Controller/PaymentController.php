@@ -4,7 +4,7 @@ namespace Troopers\MangopayBundle\Controller;
 
 use MangoPay\CardRegistration;
 use MangoPay\PayIn;
-use MLC\UserBundle\Entity\LegalUser;
+use MLC\UserBundle\Entity\UserLegal;
 use MLC\UserBundle\Form\Type\LegalUserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

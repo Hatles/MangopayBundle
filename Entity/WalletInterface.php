@@ -12,12 +12,12 @@ namespace Troopers\MangopayBundle\Entity;
 interface WalletInterface
 {
     /**
-     * @return UserInterface
+     * @return UserNaturalInterface
      */
     public function getUser();
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      */
     public function setUser($user);
 

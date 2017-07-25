@@ -52,6 +52,7 @@ class MangoPaySubscriber implements EventSubscriber
 
         if($this->reader->isMangoPayEntity($entity))
         {
+            dump($entity);
             if($mangoEntity = $this->handler->getMangoPayEntity($entity, true))
             {
                 $this->reader->addLinkedEntity($entity);

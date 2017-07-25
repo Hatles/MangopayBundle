@@ -5,6 +5,7 @@ namespace Troopers\MangopayBundle\Event;
 use MangoPay\User;
 use Symfony\Component\EventDispatcher\Event;
 use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 
 class UserEvent extends Event
 {

@@ -39,13 +39,6 @@ abstract class KycDocument implements KycDocumentInterface
     protected $type;
 
     /**
-     * @var Collection $pages
-     * @Assert\NotBlank(message="A KYC document need at least one page.")
-     * @Assert\Valid()
-     */
-    protected $pages;
-
-    /**
      * @var \DateTime
      * @MangoPayField()
      */
@@ -68,15 +61,6 @@ abstract class KycDocument implements KycDocumentInterface
      * @MangoPayField()
      */
     protected $refusedReasonType;
-
-    /**
-     * KycDocument constructor.
-     */
-    public function __construct()
-    {
-        $this->pages = new ArrayCollection();
-        $this->pages->add(new KycPage());
-    }
 
     /**
      * @return int
@@ -113,22 +97,6 @@ abstract class KycDocument implements KycDocumentInterface
     public static function getTypes()
     {
         return array(self::TYPE_ADDRESS_PROOF, self::TYPE_ARTICLES_OF_ASSOCIATION, self::TYPE_IDENTITY_PROOF, self::TYPE_REGISTRATION_PROOF, self::TYPE_SHAREHOLDER_DECLARATION);
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getPages()
-    {
-        return $this->pages;
-    }
-
-    /**
-     * @param Collection $pages
-     */
-    public function setPages($pages)
-    {
-        $this->pages = $pages;
     }
 
     /**
@@ -193,20 +161,6 @@ abstract class KycDocument implements KycDocumentInterface
     public function setRefusedReasonType($refusedReasonType)
     {
         $this->refusedReasonType = $refusedReasonType;
-    }
-
-    /**
-     * @Assert\Callback
-     * @param ExecutionContextInterface $context
-     * @param $payload
-     */
-    public function validatePages(ExecutionContextInterface $context, $payload)
-    {
-        if ($this->getPages()->isEmpty()) {
-            $context->buildViolation('A KYC document need at least one page.')
-                ->atPath('pages')
-                ->addViolation();
-        }
     }
 
     function __toString()

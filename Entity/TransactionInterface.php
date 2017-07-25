@@ -52,7 +52,7 @@ interface TransactionInterface
     /**
      * Author
      *
-     * @return UserInterface
+     * @return UserNaturalInterface
      */
     public function getAuthor();
 

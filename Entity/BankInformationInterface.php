@@ -11,7 +11,7 @@ use MangoPay\Address;
 interface BankInformationInterface
 {
     /**
-     * @return UserInterface
+     * @return UserNaturalInterface
      */
     public function getUser();
 

@@ -12,6 +12,7 @@ namespace Troopers\MangopayBundle\Annotation;
 use Application\Sonata\ClassificationBundle\Entity\Collection;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Util\ClassUtils;
 use Troopers\MangopayBundle\Annotation\MangoPayEntity;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 
@@ -57,7 +58,11 @@ class MangoPayAnnotationReader
      */
     public function isMangoPayEntity($entity)
     {
-        $reflection = new \ReflectionClass(get_class($entity));
+        dump($entity);
+        $class = ClassUtils::getClass($entity);
+        $reflection = new \ReflectionClass($class);
+        dump($reflection);
+        dump($this->reader->getClassAnnotations($reflection));
         return $this->reader->getClassAnnotation($reflection, MangoPayEntity::class);
     }
 

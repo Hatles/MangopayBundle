@@ -10,18 +10,13 @@ namespace Troopers\MangopayBundle\Handler;
 
 use Doctrine\Common\Annotations\AnnotationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
 use Troopers\MangopayBundle\Entity\KycDocumentInterface;
-use Troopers\MangopayBundle\Entity\TransactionEntityInterface;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
-use Troopers\MangopayBundle\Helper\BankInformationHelper;
-use Troopers\MangopayBundle\Helper\UserHelper;
-use Troopers\MangopayBundle\Helper\WalletHelper;
 
 class MangoPayHandler
 {
@@ -120,7 +115,7 @@ class MangoPayHandler
             case $entity instanceof TransactionInterface:
                 return $this->container->get('troopers_mangopay.transaction_helper')->findTransaction($entity);
             case $entity instanceof KycDocumentInterface:
-                return $this->container->get('troopers_mangopay.kyc_helper')->findOrCreateKycDocument($entity);
+                return $this->container->get('troopers_mangopay.kyc_helper')->findKycDocument($entity);
         }
 
         throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');

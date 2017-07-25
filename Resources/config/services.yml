@@ -6,6 +6,7 @@ parameters:
     troopers_mangopay.payment_out_helper.class: Troopers\MangopayBundle\Helper\PaymentOutHelper
     troopers_mangopay.bankwire_helper.class: Troopers\MangopayBundle\Helper\BankwireHelper
     troopers_mangopay.user_helper.class: Troopers\MangopayBundle\Helper\UserHelper
+    troopers_mangopay.user_legal_helper.class: Troopers\MangopayBundle\Helper\UserLegalHelper
     troopers_mangopay.bank_information_helper.class: Troopers\MangopayBundle\Helper\BankInformationHelper
     troopers_mangopay.wallet_helper.class: Troopers\MangopayBundle\Helper\WalletHelper
     troopers_mangopay.transaction_helper.class: Troopers\MangopayBundle\Helper\TransactionHelper
@@ -30,6 +31,14 @@ services:
 
     troopers_mangopay.user_helper:
         class: "%troopers_mangopay.user_helper.class%"
+        arguments:
+            - "@troopers_mangopay.mango_api"
+            - "@doctrine.orm.entity_manager"
+            - "@event_dispatcher"
+            - '@troopers_mangopay.user_legal_helper'
+
+    troopers_mangopay.user_legal_helper:
+        class: "%troopers_mangopay.user_legal_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
             - "@doctrine.orm.entity_manager"

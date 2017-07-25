@@ -15,7 +15,7 @@ use MangoPay\KycPage;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Troopers\MangopayBundle\Entity\KycDocumentInterface;
 use Troopers\MangopayBundle\Entity\KycPageInterface;
-use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Event\KycEvent;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
 
@@ -48,7 +48,19 @@ class KycHelper
         return $mangoDocument;
     }
 
-    public function createKycDocumentForUser(UserInterface $user, $type)
+    public function findKycDocument(KycDocumentInterface $kycDocument)
+    {
+        $mangoDocument = null;
+
+        if ($documentId = $kycDocument->getKycDocumentId()) {
+            $mangoUser = $this->userHelper->findOrCreateMangoUser($kycDocument->getUser());
+            $mangoDocument = $this->mangopayHelper->Users->GetKycDocument($mangoUser->Id, $documentId);
+        }
+
+        return $mangoDocument;
+    }
+
+    public function createKycDocumentForUser(UserNaturalInterface $user, $type)
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($user);
 
@@ -93,7 +105,7 @@ class KycHelper
         $mangoPage = new KycPage();
         $mangoPage->File = $kycPage->getFileBase64();
 
-        $mangoPage = $this->mangopayHelper->Users->CreateKycPage($mangoUser->Id, $mangoDocument->Id, $mangoPage);
+        $this->mangopayHelper->Users->CreateKycPage($mangoUser->Id, $mangoDocument->Id, $mangoPage);
 
         $event = new KycEvent($mangoDocument, $kycDocument->getUser(), $kycDocument);
         $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_KYCPAGE, $event);
@@ -134,10 +146,7 @@ class KycHelper
             $mangoPage = new KycPage();
             $mangoPage->File = $page->getFileBase64();
 
-            $mangoPage = $this->mangopayHelper->Users->CreateKycPage($mangoUser->Id, $mangoDocument->Id, $mangoPage);
-
-//            $event = new KycEvent($mangoDocument, $kycDocument->getUser(), $kycDocument);
-//            $this->dispatcher->dispatch(TroopersMangopayEvents::NEW_KYCPAGE, $event);
+            $this->mangopayHelper->Users->CreateKycPage($mangoUser->Id, $mangoDocument->Id, $mangoPage);
         }
 
         $mangoDocument->Status = "VALIDATION_ASKED";

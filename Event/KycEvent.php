@@ -6,6 +6,7 @@ use MangoPay\KycDocument;
 use Symfony\Component\EventDispatcher\Event;
 use Troopers\MangopayBundle\Entity\KycDocumentInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
+use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 
 class KycEvent extends Event
 {
@@ -15,7 +16,7 @@ class KycEvent extends Event
     private $mangoDocument;
 
     /**
-     * @var UserInterface
+     * @var UserNaturalInterface
      */
     private $user;
 
@@ -54,7 +55,7 @@ class KycEvent extends Event
     }
 
     /**
-     * @return UserInterface
+     * @return UserNaturalInterface
      */
     public function getUser()
     {
@@ -62,7 +63,7 @@ class KycEvent extends Event
     }
 
     /**
-     * @param UserInterface $user
+     * @param UserNaturalInterface $user
      */
     public function setUser($user)
     {

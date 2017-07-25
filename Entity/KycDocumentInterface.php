@@ -18,16 +18,6 @@ interface KycDocumentInterface
     const TYPE_ADDRESS_PROOF = 'ADDRESS_PROOF';
 
     /**
-     * @return UserInterface
-     */
-    public function getUser();
-
-    /**
-     * @param UserInterface $user
-     */
-    public function setUser($user);
-
-    /**
      * @return int
      */
     public function getKycDocumentId();
@@ -46,4 +36,9 @@ interface KycDocumentInterface
      * @return array
      */
     public function getPages();
+
+    /**
+     * @return UserInterface
+     */
+    public function getUser();
 }
