@@ -44,27 +44,35 @@ class MangoPayHandler
 
         if (is_string($callback)) {
             if (method_exists($entity, $callback) && $entity->$callback()) {
-                $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
+                $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($entity, $property, $mangoEntity, $annotationField));
             } else {
-                throw new AnnotationException("Loadable callback '" . $callback . "' doesn't exists");
+                throw new AnnotationException("Loadable callback '" . $callback . "' doesn't exists in class : ".get_class($entity));
             }
         } elseif ($callback === null || $callback === true) {
-            $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($property, $mangoEntity, $annotationField));
+            $this->accessor->setValue($entity, $property, $this->getValueFromMangoPayEntity($entity, $property, $mangoEntity, $annotationField));
         }
     }
 
-    /**
-     * @param string $property
-     * @param object|array $mangoEntity
-     * @param MangoPayField $annotationField
-     * @return mixed|null ;
-     */
-    private function getValueFromMangoPayEntity($property, $mangoEntity, MangoPayField $annotationField)
+
+    private function getValueFromMangoPayEntity($entity, $property, $mangoEntity, MangoPayField $annotationField)
     {
         $mangoProperty = $annotationField->getName() ?: ucfirst($property);
 
         if (property_exists($mangoEntity, $mangoProperty)) {
-            return $mangoEntity->{$mangoProperty};
+            $dataTransformer = $annotationField->getDataTransformer();
+            $mangoValue = $mangoEntity->{$mangoProperty};
+
+            if ($dataTransformer && is_string($dataTransformer)) {
+                if (method_exists($entity, $dataTransformer)) {
+                    return $entity->$dataTransformer($mangoValue);
+                } else {
+                    throw new AnnotationException("Data transformer function '" . $dataTransformer . "' doesn't exists in class : ".get_class($entity));
+                }
+            }
+            else
+            {
+                return $mangoValue;
+            }
         } else {
             //TODO : throw exception invalid property
             return null;

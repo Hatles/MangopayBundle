@@ -80,11 +80,8 @@ class MangoPayAnnotationReader
      */
     public function isMangoPayEntity($entity)
     {
-        dump($entity);
         $class = ClassUtils::getClass($entity);
         $reflection = new \ReflectionClass($class);
-        dump($reflection);
-        dump($this->reader->getClassAnnotations($reflection));
         return $this->reader->getClassAnnotation($reflection, MangoPayEntity::class);
     }
 
