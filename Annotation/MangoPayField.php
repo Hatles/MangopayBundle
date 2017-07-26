@@ -30,6 +30,11 @@ class MangoPayField
     private $dataTransformer;
 
     /**
+     * @var string
+     */
+    private $dataTransformerCallback;
+
+    /**
      * MangoPayField constructor.
      * @param array $options
      */
@@ -47,6 +52,10 @@ class MangoPayField
 
         if (array_key_exists('dataTransformer', $options)) {
             $this->dataTransformer = $options['dataTransformer'];
+        }
+
+        if (array_key_exists('dataTransformerCallback', $options)) {
+            $this->dataTransformerCallback = $options['dataTransformerCallback'];
         }
     }
 
@@ -72,5 +81,13 @@ class MangoPayField
     public function getDataTransformer()
     {
         return $this->dataTransformer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataTransformerCallback()
+    {
+        return $this->dataTransformerCallback;
     }
 }

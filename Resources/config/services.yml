@@ -135,3 +135,14 @@ services:
         class: Troopers\MangopayBundle\Listener\MangoPayExceptionListener
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    troopers_mangopay.data_transformer.date:
+        class: Troopers\MangopayBundle\DataTransformer\TimestampTransformer
+        tags:
+            - { name: troopers_mangopay.data_transformer }
+
+    troopers_mangopay.data_transformer.money:
+        class: Troopers\MangopayBundle\DataTransformer\MoneyTransformer
+        tags:
+            - { name: troopers_mangopay.data_transformer }
+

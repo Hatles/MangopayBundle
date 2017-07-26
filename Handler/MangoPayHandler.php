@@ -12,6 +12,7 @@ use Doctrine\Common\Annotations\AnnotationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
+use Troopers\MangopayBundle\DataTransformer\DataTransformerInterface;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
 use Troopers\MangopayBundle\Entity\KycDocumentInterface;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
@@ -61,6 +62,11 @@ class MangoPayHandler
 //    private $kycHelper;
 
     /**
+     * @var array
+     */
+    private $dataTransformers;
+
+    /**
      * MangoPayHandler constructor.
      * @param $container
      */
@@ -69,6 +75,27 @@ class MangoPayHandler
         $this->accessor = PropertyAccess::createPropertyAccessor();
 
         $this->container = $container;
+
+        $this->dataTransformers = array();
+    }
+
+    public function addDataTransformer(DataTransformerInterface $dataTransformer)
+    {
+        $this->dataTransformers[$dataTransformer->getName()] = $dataTransformer;
+    }
+
+    /**
+     * @param string $dataTransformer
+     * @return DataTransformerInterface
+     * @throws \Exception
+     */
+    public function getDataTransformer($dataTransformer)
+    {
+        if (array_key_exists($dataTransformer, $this->dataTransformers)) {
+            return $this->dataTransformers[$dataTransformer];
+        }
+
+        throw new \Exception('No such data transformer : '.$dataTransformer);
     }
 
     /**
@@ -106,14 +133,20 @@ class MangoPayHandler
         $mangoProperty = $annotationField->getName() ?: ucfirst($property);
 
         if (property_exists($mangoEntity, $mangoProperty)) {
-            $dataTransformer = $annotationField->getDataTransformer();
             $mangoValue = $mangoEntity->{$mangoProperty};
 
-            if ($dataTransformer && is_string($dataTransformer)) {
-                if (method_exists($entity, $dataTransformer)) {
-                    return $entity->$dataTransformer($mangoValue);
+            if (null !== ($dataTransformer = $annotationField->getDataTransformer()) && is_string($dataTransformer)) {
+                if (null !== ($transformer = $this->getDataTransformer($dataTransformer))) {
+                    return $transformer->transform($mangoValue);
                 } else {
-                    throw new AnnotationException("Data transformer function '" . $dataTransformer . "' doesn't exists in class : ".get_class($entity));
+                    throw new AnnotationException("Data transformer '" . $dataTransformer . "' doesn't exists");
+                }
+            }
+            elseif (($dataTransformerCallback = $annotationField->getDataTransformerCallback()) && is_string($dataTransformerCallback)) {
+                if (method_exists($entity, $dataTransformerCallback)) {
+                    return $entity->$dataTransformerCallback($mangoValue);
+                } else {
+                    throw new AnnotationException("Data transformer function '" . $dataTransformerCallback . "' doesn't exists in class : ".get_class($entity));
                 }
             }
             else
