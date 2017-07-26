@@ -8,11 +8,12 @@ namespace Troopers\MangopayBundle\Entity;
  */
 interface TransactionInterface
 {
-    const TYPE_PAYIN = "PAY_IN";
+    const TYPE_PAYIN = "PAYIN";
     const TYPE_PAYOUT = "PAYOUT";
     const TYPE_TRANSFER = "TRANSFER";
 //    const TYPE_REFUND = "REFUND";
 
+    const STATUS_PRE_CREATED = "PRE_CREATED";
     const STATUS_CREATED = "CREATED";
     const STATUS_SUCCEEDED = "SUCCEEDED";
     const STATUS_FAILED = "FAILED";
@@ -117,4 +118,9 @@ interface TransactionInterface
      * @return string
      */
     public function getTag();
+
+    /**
+     * @return BankInformationInterface
+     */
+    public function getCreditedAccount();
 }

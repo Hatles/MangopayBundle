@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
-use Troopers\MangopayBundle\Form\CardType;
+use Troopers\MangopayBundle\Form\Type\CardType;
 
 /**
  * Manage payment.
@@ -32,7 +32,7 @@ class PaymentDirectController extends Controller
         if (!$transaction instanceof TransactionInterface) {
             throw $this->createNotFoundException('Transaction not found');
         }
-        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED) {
+        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED && $transaction->getStatus() != TransactionInterface::STATUS_PRE_CREATED) {
             throw $this->createNotFoundException('Transaction already succeeded or failed');
         }
 
@@ -84,7 +84,7 @@ class PaymentDirectController extends Controller
         if (!$transaction instanceof TransactionInterface) {
             throw $this->createNotFoundException('Transaction not found');
         }
-        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED) {
+        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED && $transaction->getStatus() != TransactionInterface::STATUS_PRE_CREATED) {
             throw $this->createNotFoundException('Transaction already succeeded or failed');
         }
 
@@ -178,7 +178,7 @@ class PaymentDirectController extends Controller
         if (!$transaction instanceof TransactionInterface) {
             throw $this->createNotFoundException('Transaction not found');
         }
-        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED) {
+        if ($transaction->getStatus() != TransactionInterface::STATUS_CREATED && $transaction->getStatus() != TransactionInterface::STATUS_PRE_CREATED) {
             throw $this->createNotFoundException('Transaction already succeeded or failed');
         }
 

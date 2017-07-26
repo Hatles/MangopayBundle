@@ -12,7 +12,6 @@ use Troopers\MangopayBundle\Annotation\MangoPayField;
  * Transaction.
  *
  * @ORM\MappedSuperclass
- * @MangoPayEntity(supportPersistAndUpdate = false)
  */
 abstract class Transaction implements TransactionInterface
 {
@@ -55,6 +54,7 @@ abstract class Transaction implements TransactionInterface
      * @var string
      * @ORM\Column(name="status", type="string", length=255)
      * @Assert\Choice(callback = "getStatuses")
+     * @MangoPayField()
      */
     protected $status;
 
@@ -100,6 +100,14 @@ abstract class Transaction implements TransactionInterface
     protected $executionDate;
 
     /**
+     * Creation date;.
+     *
+     * @var \DateTime
+     * @MangoPayField(dataTransformer="date")
+     */
+    protected $creationDate;
+
+    /**
      * TransactionNature { REGULAR, REFUND, REPUDIATION }.
      *
      * @var string
@@ -115,13 +123,13 @@ abstract class Transaction implements TransactionInterface
 
     public function __construct()
     {
-        $this->status = self::STATUS_CREATED;
+        $this->status = self::STATUS_PRE_CREATED;
         $this->fees = 0;
     }
 
     public static function getStatuses()
     {
-        return array(self::STATUS_CREATED, self::STATUS_SUCCEEDED, self::STATUS_FAILED);
+        return array(self::STATUS_CREATED, self::STATUS_SUCCEEDED, self::STATUS_FAILED, self::STATUS_PRE_CREATED);
     }
 
     public static function getTypes()
@@ -284,6 +292,22 @@ abstract class Transaction implements TransactionInterface
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
+    }
+
+    /**
+     * @param \DateTime $creationDate
+     */
+    public function setCreationDate($creationDate)
+    {
+        $this->creationDate = $creationDate;
+    }
+
+    /**
      * @return string
      */
     public function getNature()
@@ -325,9 +349,16 @@ abstract class Transaction implements TransactionInterface
 
     /**
      * @param string $tag
+     * @param string $tag
      */
     public function setTag($tag)
     {
         $this->tag = $tag;
     }
+
+    /**
+     * @return BankInformationInterface
+     */
+    public function getCreditedAccount()
+    {}
 }

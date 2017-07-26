@@ -13,7 +13,7 @@ parameters:
     troopers_mangopay.payment_transfer_helper.class: Troopers\MangopayBundle\Helper\PaymentTransferHelper
     troopers_mangopay.kyc_helper.class: Troopers\MangopayBundle\Helper\KycHelper
 #    troopers_mangopay.order.class: Troopers\MangopayBundle\Entity\Order
-    troopers_mangopay.form.card: Troopers\MangopayBundle\Form\CardType
+    troopers_mangopay.form.card: Troopers\MangopayBundle\Form\Type\CardType
 
     troopers_mangopay.annotation_reader.class: Troopers\MangopayBundle\Annotation\MangoPayAnnotationReader
     troopers_mangopay.handler.class: Troopers\MangopayBundle\Handler\MangoPayHandler
@@ -97,6 +97,7 @@ services:
         class: "%troopers_mangopay.payment_out_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
+            - '@doctrine.orm.entity_manager'
             - "@troopers_mangopay.wallet_helper"
 
     troopers_mangopay.transaction_helper:
