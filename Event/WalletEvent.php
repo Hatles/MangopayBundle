@@ -4,6 +4,7 @@ namespace Troopers\MangopayBundle\Event;
 
 use MangoPay\Wallet;
 use Symfony\Component\EventDispatcher\Event;
+use Troopers\MangopayBundle\Entity\UserInterface;
 use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
 
@@ -15,7 +16,7 @@ class WalletEvent extends Event
     private $mangoWallet;
 
     /**
-     * @var UserNaturalInterface
+     * @var UserInterface
      */
     private $user;
 
@@ -27,10 +28,10 @@ class WalletEvent extends Event
     /**
      * WalletEvent constructor.
      * @param Wallet $mangoWallet
-     * @param UserNaturalInterface $user
+     * @param UserInterface $user
      * @param WalletInterface $wallet
      */
-    public function __construct(Wallet $mangoWallet, UserNaturalInterface $user, WalletInterface $wallet)
+    public function __construct(Wallet $mangoWallet, UserInterface $user, WalletInterface $wallet)
     {
         $this->mangoWallet = $mangoWallet;
         $this->user = $user;
@@ -64,7 +65,7 @@ class WalletEvent extends Event
     /**
      * Get user.
      *
-     * @return UserNaturalInterface
+     * @return UserInterface
      */
     public function getUser()
     {
@@ -74,7 +75,7 @@ class WalletEvent extends Event
     /**
      * Set user.
      *
-     * @param UserNaturalInterface $user
+     * @param UserInterface $user
      *
      * @return $this
      */
