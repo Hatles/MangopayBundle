@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Troopers\MangopayBundle\Annotation\MangoPayEntity;
+use Troopers\MangopayBundle\Annotation\MangoPayField;
 
 /**
  * Transaction.
@@ -36,7 +37,7 @@ abstract class Transaction implements TransactionInterface
      * Credited funds.
      *
      * @var int
-     * @ORM\Column(name="creditedFunds", type="integer")
+     * @MangoPayField(dataTransformer="money")
      */
     protected $creditedFunds;
 
@@ -115,6 +116,7 @@ abstract class Transaction implements TransactionInterface
     public function __construct()
     {
         $this->status = self::STATUS_CREATED;
+        $this->fees = 0;
     }
 
     public static function getStatuses()

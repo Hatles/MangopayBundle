@@ -2,6 +2,7 @@
 
 namespace Troopers\MangopayBundle\Helper;
 
+use Doctrine\ORM\EntityManager;
 use MangoPay\Money;
 use MangoPay\PayOut;
 use MangoPay\PayOutPaymentDetailsBankWire;
@@ -25,14 +26,18 @@ class PaymentTransferHelper
      */
     private $walletHelper;
 
+    private $entityManager;
+
     /**
      * PaymentOutHelper constructor.
      * @param MangopayHelper $mangopayHelper
+     * @param EntityManager $entityManager
      * @param WalletHelper $walletHelper
      */
-    public function __construct(MangopayHelper $mangopayHelper, WalletHelper $walletHelper)
+    public function __construct(MangopayHelper $mangopayHelper, EntityManager $entityManager, WalletHelper $walletHelper)
     {
         $this->mangopayHelper = $mangopayHelper;
+        $this->entityManager = $entityManager;
         $this->walletHelper = $walletHelper;
     }
 
@@ -57,7 +62,14 @@ class PaymentTransferHelper
         $mangoTransfer->DebitedWalletId = $debitedWallet->getMangoWalletId();
         $mangoTransfer->CreditedWalletId = $creditedWallet->getMangoWalletId();
 
-        return $this->mangopayHelper->Transfers->Create($mangoTransfer);
+        $mangoTransfer =  $this->mangopayHelper->Transfers->Create($mangoTransfer);
+
+        $transfer->setMangoTransactionId($mangoTransfer->Id);
+
+        $this->entityManager->persist($transfer);
+        $this->entityManager->flush();
+
+        return $mangoTransfer;
     }
 
     /**

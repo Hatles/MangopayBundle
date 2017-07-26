@@ -2,6 +2,7 @@
 
 namespace Troopers\MangopayBundle\Helper;
 
+use Doctrine\ORM\EntityManager;
 use MangoPay\Money;
 use MangoPay\PayIn;
 use MangoPay\PayInExecutionDetailsDirect;
@@ -9,6 +10,7 @@ use MangoPay\PayInPaymentDetailsBankWire;
 use MangoPay\Wallet as MangoWallet;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Translation\DataCollectorTranslator;
+use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
 use Troopers\MangopayBundle\Event\PayInEvent;
 use Troopers\MangopayBundle\Exception\MangopayPayInCreationException;
@@ -41,17 +43,21 @@ class BankwireHelper
      */
     protected $translator;
 
+    private $entityManager;
+
     /**
      * BankwireHelper constructor.
      * @param $mangopayHelper
+     * @param EntityManager $entityManager
      * @param UserHelper $userHelper
      * @param WalletHelper $walletHelper
      * @param EventDispatcherInterface $dispatcher
      * @param DataCollectorTranslator $translator
      */
-    public function __construct($mangopayHelper, UserHelper $userHelper, WalletHelper $walletHelper, EventDispatcherInterface $dispatcher, DataCollectorTranslator $translator)
+    public function __construct($mangopayHelper, EntityManager $entityManager, UserHelper $userHelper, WalletHelper $walletHelper, EventDispatcherInterface $dispatcher, DataCollectorTranslator $translator)
     {
         $this->mangopayHelper = $mangopayHelper;
+        $this->entityManager = $entityManager;
         $this->userHelper = $userHelper;
         $this->walletHelper = $walletHelper;
         $this->dispatcher = $dispatcher;
@@ -100,7 +106,7 @@ class BankwireHelper
         $mangoWallet = $this->walletHelper->findOrCreateWallet($wallet);
 
         $debitedFunds = new Money();
-        $debitedFunds->Amount = $amount * 100;
+        $debitedFunds->Amount = $amount;
         $debitedFunds->Currency = $mangoWallet->Currency;
         $fees = new Money();
         $fees->Amount = $feesAmount;
@@ -116,12 +122,11 @@ class BankwireHelper
         $payin->PaymentDetails = $paymentDetails;
         $payin->AuthorId = $mangoUser->Id;
         if ($creditedUserId !== null)
+        {
             $payin->CreditedUserId = $creditedUserId;
+        }
 
         $bankWire = $this->mangopayHelper->PayIns->Create($payin);
-
-        dump($bankWire);
-        1 / 0;
 
         if (property_exists($bankWire, 'Status') && $bankWire->Status != 'FAILED') {
             $event = new PayInEvent($payin);
@@ -137,5 +142,17 @@ class BankwireHelper
             'mangopay.error.' . $bankWire->ResultCode,
             [], 'messages'
         ));
+    }
+
+    public function createBankWirePayIn(TransactionInterface $transaction)
+    {
+        $bankWire = $this->bankwireToWallet($transaction->getCreditedWallet(), $transaction->getDebitedFunds(), $transaction->getFees());
+
+        $transaction->setMangoTransactionId($bankWire->Id);
+
+        $this->entityManager->persist($transaction);
+        $this->entityManager->flush();
+
+        return $bankWire;
     }
 }

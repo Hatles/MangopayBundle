@@ -87,6 +87,7 @@ services:
         class: "%troopers_mangopay.bankwire_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
+            - '@doctrine.orm.entity_manager'
             - '@troopers_mangopay.user_helper'
             - '@troopers_mangopay.wallet_helper'
             - '@event_dispatcher'
@@ -105,7 +106,7 @@ services:
 
     troopers_mangopay.payment_transfer_helper:
         class: "%troopers_mangopay.payment_transfer_helper.class%"
-        arguments: ['@troopers_mangopay.mango_api', '@troopers_mangopay.wallet_helper']
+        arguments: ['@troopers_mangopay.mango_api', '@doctrine.orm.entity_manager', '@troopers_mangopay.wallet_helper']
 
     troopers_mangopay.kyc_helper:
         class: "%troopers_mangopay.kyc_helper.class%"
