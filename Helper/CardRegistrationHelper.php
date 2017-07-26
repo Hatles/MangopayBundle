@@ -13,14 +13,10 @@ use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 class CardRegistrationHelper
 {
     private $mangopayHelper;
-    private $entityManager;
-    private $dispatcher;
 
-    public function __construct(MangopayHelper $mangopayHelper, EntityManager $entityManager, EventDispatcherInterface $dispatcher)
+    public function __construct(MangopayHelper $mangopayHelper)
     {
         $this->mangopayHelper = $mangopayHelper;
-        $this->entityManager = $entityManager;
-        $this->dispatcher = $dispatcher;
     }
 
     public function createCardRegistrationForUser(UserNaturalInterface $user)

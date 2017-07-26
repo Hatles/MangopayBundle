@@ -149,7 +149,7 @@ abstract class KycDocument implements KycDocumentInterface
         $this->refusedReasonType = $refusedReasonType;
     }
 
-    function __toString()
+    public function __toString()
     {
         return $this->getType() ?: "TYPE_NULL";
     }

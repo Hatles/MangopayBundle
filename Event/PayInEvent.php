@@ -2,6 +2,7 @@
 
 namespace Troopers\MangopayBundle\Event;
 
+use MangoPay\CardPreAuthorization;
 use MangoPay\PayIn;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -10,32 +11,49 @@ class PayInEvent extends Event
     private $payIn;
     private $preAuth;
 
-    public function __construct(PayIn $payIn)
+    public function __construct(PayIn $payIn, CardPreAuthorization $preAuth = null)
     {
         $this->payIn = $payIn;
+        $this->preAuth = $preAuth;
     }
 
     /**
      * Get payin.
      *
-     * @return string
+     * @return PayIn
      */
-    public function getPayin()
+    public function getPayIn()
     {
-        return $this->payin;
+        return $this->payIn;
     }
 
     /**
      * Set payin.
      *
-     * @param string $payin
+     * @param PayIn $payIn
      *
-     * @return $this
+     * @return PayInEvent
      */
-    public function setPayin($payin)
+    public function setPayIn($payIn)
     {
-        $this->payin = $payin;
+        $this->payIn = $payIn;
 
         return $this;
+    }
+
+    /**
+     * @return CardPreAuthorization
+     */
+    public function getPreAuth()
+    {
+        return $this->preAuth;
+    }
+
+    /**
+     * @param CardPreAuthorization $preAuth
+     */
+    public function setPreAuth($preAuth)
+    {
+        $this->preAuth = $preAuth;
     }
 }

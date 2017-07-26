@@ -80,7 +80,7 @@ class PaymentOutHelper
     public function buildPayOutPaymentDetailsBankWire(BankInformationInterface $bankInformation)
     {
         $meanOfPaymentDetails = new PayOutPaymentDetailsBankWire();
-        if (null == $bankAccountId = $bankInformation->getMangoBankAccountId()) {
+        if (null === ($bankAccountId = $bankInformation->getMangoBankAccountId())) {
             throw new NotFoundHttpException(sprintf('bankAccount not found for bankInfo of user\'s id : %s', $bankInformation->getUser()->getId()));
         }
         $meanOfPaymentDetails->BankAccountId = $bankAccountId;

@@ -135,7 +135,7 @@ class UserLegalHelper
      */
     public function updateOrPersistMangoUserLegal(UserLegalInterface $user)
     {
-        if (!$user->getId() or !$user->getMangoUserId()) {
+        if (!$user->getId() || !$user->getMangoUserId()) {
             return $this->createMangoUserLegal($user, true);
         } else {
             return $this->updateMangoUserLegal($user, true);

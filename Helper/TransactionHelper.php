@@ -21,19 +21,12 @@ class TransactionHelper
     private $mangopayHelper;
 
     /**
-     * @var WalletHelper
-     */
-    private $walletHelper;
-
-    /**
      * TransactionHelper constructor.
      * @param MangopayHelper $mangopayHelper
-     * @param WalletHelper $walletHelper
      */
-    public function __construct(MangopayHelper $mangopayHelper, WalletHelper $walletHelper)
+    public function __construct(MangopayHelper $mangopayHelper)
     {
         $this->mangopayHelper = $mangopayHelper;
-        $this->walletHelper = $walletHelper;
     }
 
     public function findTransaction(TransactionInterface $transaction)

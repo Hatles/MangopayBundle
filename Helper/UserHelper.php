@@ -112,7 +112,7 @@ class UserHelper
      */
     public function updateOrPersistMangoUserNatural(UserNaturalInterface $user)
     {
-        if (!$user->getId() or !$user->getMangoUserId()) {
+        if (!$user->getId() || !$user->getMangoUserId()) {
             return $this->createMangoUser($user, true);
         } else {
             return $this->updateMangoUser($user, true);
@@ -160,7 +160,7 @@ class UserHelper
     public function updateOrPersistMangoUser(UserInterface $user)
     {
 
-        if (!$user->getId() or !$user->getMangoUserId()) {
+        if (!$user->getId() || !$user->getMangoUserId()) {
             if ($user instanceof UserNaturalInterface) {
                 return $this->createMangoUser($user, true);
             } elseif ($user instanceof UserLegalInterface) {

@@ -17,13 +17,53 @@ use Troopers\MangopayBundle\Entity\KycDocumentInterface;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\UserInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
+use Troopers\MangopayBundle\Helper\BankInformationHelper;
+use Troopers\MangopayBundle\Helper\KycHelper;
+use Troopers\MangopayBundle\Helper\TransactionHelper;
+use Troopers\MangopayBundle\Helper\UserHelper;
+use Troopers\MangopayBundle\Helper\WalletHelper;
 
 class MangoPayHandler
 {
+    /**
+     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
+     */
     private $accessor;
 
-    private $container;
+//    /**
+//     * @var ContainerInterface
+//     */
+//    private $container;
+//
+//    /**
+//     * @var UserHelper
+//     */
+//    private $userHelper;
+//
+//    /**
+//     * @var BankInformationHelper
+//     */
+//    private $bankInformationHelper;
+//
+//    /**
+//     * @var WalletHelper
+//     */
+//    private $walletHelper;
+//
+//    /**
+//     * @var TransactionHelper
+//     */
+//    private $transactionHelper;
+//
+//    /**
+//     * @var KycHelper
+//     */
+//    private $kycHelper;
 
+    /**
+     * MangoPayHandler constructor.
+     * @param $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->accessor = PropertyAccess::createPropertyAccessor();
@@ -32,9 +72,9 @@ class MangoPayHandler
     }
 
     /**
-     * @param $entity
-     * @param $property
-     * @param $mangoEntity
+     * @param object $entity
+     * @param mixed $property
+     * @param object $mangoEntity
      * @param MangoPayField $annotationField
      * @throws AnnotationException
      */
@@ -53,7 +93,14 @@ class MangoPayHandler
         }
     }
 
-
+    /**
+     * @param object $entity
+     * @param mixed $property
+     * @param object $mangoEntity
+     * @param MangoPayField $annotationField
+     * @return null
+     * @throws AnnotationException
+     */
     private function getValueFromMangoPayEntity($entity, $property, $mangoEntity, MangoPayField $annotationField)
     {
         $mangoProperty = $annotationField->getName() ?: ucfirst($property);
@@ -81,6 +128,10 @@ class MangoPayHandler
 //        throw new \InvalidArgumentException('L\'entity de la classe "'.get_class($entity).'" doit étendre une des interfaces suivantes : UserInterface, WalletInterface, BankInformationInterface');
     }
 
+    /**
+     * @param object $entity
+     * @return \MangoPay\BankAccount
+     */
     public function disableEntity($entity)
     {
         //TODO : disable mangoPay entity on remove doctrine entity
