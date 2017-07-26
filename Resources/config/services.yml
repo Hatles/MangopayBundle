@@ -10,6 +10,7 @@ parameters:
     troopers_mangopay.bank_information_helper.class: Troopers\MangopayBundle\Helper\BankInformationHelper
     troopers_mangopay.wallet_helper.class: Troopers\MangopayBundle\Helper\WalletHelper
     troopers_mangopay.transaction_helper.class: Troopers\MangopayBundle\Helper\TransactionHelper
+    troopers_mangopay.payment_transfer_helper.class: Troopers\MangopayBundle\Helper\PaymentTransferHelper
     troopers_mangopay.kyc_helper.class: Troopers\MangopayBundle\Helper\KycHelper
 #    troopers_mangopay.order.class: Troopers\MangopayBundle\Entity\Order
     troopers_mangopay.form.card: Troopers\MangopayBundle\Form\CardType
@@ -101,6 +102,10 @@ services:
         class: "%troopers_mangopay.transaction_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
+
+    troopers_mangopay.payment_transfer_helper:
+        class: "%troopers_mangopay.payment_transfer_helper.class%"
+        arguments: ['@troopers_mangopay.mango_api', '@troopers_mangopay.wallet_helper']
 
     troopers_mangopay.kyc_helper:
         class: "%troopers_mangopay.kyc_helper.class%"
