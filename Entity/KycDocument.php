@@ -36,7 +36,7 @@ abstract class KycDocument implements KycDocumentInterface
 
     /**
      * @var \DateTime
-     * @MangoPayField(dataTransformer="getDate")
+     * @MangoPayField(dataTransformer="date")
      */
     protected $creationDate;
 
