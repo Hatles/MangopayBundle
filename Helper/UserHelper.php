@@ -69,7 +69,7 @@ class UserHelper
         $mangoUser->Birthday = $birthday;
         $mangoUser->Nationality = $user->getNationalityCode();
         $mangoUser->CountryOfResidence = $user->getCountryCode();
-        $mangoUser->Tag = $user->getId();
+        $mangoUser->Tag = 'N_'.$user->getId();
 
         $mangoUser->Address = $user->getMangoAddress();
 
