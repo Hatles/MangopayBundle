@@ -5,7 +5,6 @@ namespace Troopers\MangopayBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use Troopers\MangopayBundle\Annotation\MangoPayEntity;
 use Troopers\MangopayBundle\Annotation\MangoPayField;
 
 /**
