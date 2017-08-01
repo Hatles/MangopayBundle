@@ -43,9 +43,10 @@ class PaymentTransferHelper
 
     /**
      * @param TransactionInterface $transfer
+     * @param bool $needPersist
      * @return Transfer
      */
-    public function createTransfer(TransactionInterface $transfer)
+    public function createTransfer(TransactionInterface $transfer, $needPersist = true)
     {
         $debitedWallet = $transfer->getDebitedWallet();
         $creditedWallet = $transfer->getCreditedWallet();
@@ -65,9 +66,13 @@ class PaymentTransferHelper
         $mangoTransfer =  $this->mangopayHelper->Transfers->Create($mangoTransfer);
 
         $transfer->setMangoTransactionId($mangoTransfer->Id);
+        $transfer->setStatus($mangoTransfer->Status);
 
-        $this->entityManager->persist($transfer);
-        $this->entityManager->flush();
+        if($needPersist)
+        {
+            $this->entityManager->persist($transfer);
+            $this->entityManager->flush();
+        }
 
         return $mangoTransfer;
     }
