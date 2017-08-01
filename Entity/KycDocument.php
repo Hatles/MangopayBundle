@@ -40,12 +40,6 @@ abstract class KycDocument implements KycDocumentInterface
      */
     protected $creationDate;
 
-    public function getDate($timeStamp)
-    {
-        $dtStr = date("c", $timeStamp);
-        return new \DateTime($dtStr);
-    }
-
     /**
      * @var string
      * @MangoPayField()
