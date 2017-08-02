@@ -58,7 +58,8 @@ class MangoPayAnnotationReader
      */
     public function getMangoPayEntityFields($entity)
     {
-        $reflection = new \ReflectionClass(get_class($entity));
+        $class = ClassUtils::getClass($entity);
+        $reflection = new \ReflectionClass($class);
 
         if (!$this->isMangoPayEntity($entity)) {
             return [];
