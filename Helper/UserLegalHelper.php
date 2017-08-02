@@ -88,7 +88,7 @@ class UserLegalHelper
         //Country of residence of the legal representative -
         $mangoUser->LegalRepresentativeCountryOfResidence = $countryOfResidence;
 
-        $mangoUser->Tag = 'L_'.$user->getId();;
+        $mangoUser->Tag = 'L_'.$user->getId();
 
 
         $headquartersAddress = null;
@@ -183,7 +183,7 @@ class UserLegalHelper
         //Country of residence of the legal representative -
         $mangoUser->LegalRepresentativeCountryOfResidence = $countryOfResidence;
 
-        $mangoUser->Tag = $user->getId();
+        $mangoUser->Tag = 'L_'.$user->getId();
 
 
         $headquartersAddress = null;
