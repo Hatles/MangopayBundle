@@ -74,6 +74,7 @@ abstract class Transaction implements TransactionInterface
      * Result code.
      *
      * @var string
+     * @MangoPayField()
      */
     protected $resultCode;
 
@@ -88,6 +89,7 @@ abstract class Transaction implements TransactionInterface
      * The PreAuthorization result Message explaining the result code.
      *
      * @var string
+     * @MangoPayField()
      */
     protected $resultMessage;
 
@@ -95,6 +97,7 @@ abstract class Transaction implements TransactionInterface
      * Execution date;.
      *
      * @var \DateTime
+     * @MangoPayField(dataTransformer="date")
      */
     protected $executionDate;
 
@@ -110,6 +113,7 @@ abstract class Transaction implements TransactionInterface
      * TransactionNature { REGULAR, REFUND, REPUDIATION }.
      *
      * @var string
+     * @MangoPayField()
      */
     protected $nature;
 
@@ -117,6 +121,7 @@ abstract class Transaction implements TransactionInterface
      * PaymentType { CARD, DIRECT_DEBIT, PREAUTHORIZED, BANK_WIRE }.
      *
      * @var string
+     * @MangoPayField()
      */
     protected $paymentType;
 
