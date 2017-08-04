@@ -7,6 +7,7 @@ use MangoPay\Money;
 use MangoPay\PayIn;
 use MangoPay\PayInExecutionDetailsDirect;
 use MangoPay\PayInPaymentDetailsBankWire;
+use MangoPay\Transaction;
 use MangoPay\Wallet as MangoWallet;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Translation\DataCollectorTranslator;
@@ -100,6 +101,14 @@ class BankwireHelper
         return $bankWire;
     }
 
+    /**
+     * @param WalletInterface $wallet
+     * @param $amount
+     * @param int $feesAmount
+     * @param null $creditedUserId
+     * @return Transaction
+     * @throws MangopayPayInCreationException
+     */
     public function bankwireToWallet(WalletInterface $wallet, $amount, $feesAmount = 0, $creditedUserId = null)
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($wallet->getUser());
@@ -149,6 +158,7 @@ class BankwireHelper
         $bankWire = $this->bankwireToWallet($transaction->getCreditedWallet(), $transaction->getDebitedFunds(), $transaction->getFees());
 
         $transaction->setMangoTransactionId($bankWire->Id);
+        $transaction->setStatus($bankWire->Status);
 
         $this->entityManager->persist($transaction);
         $this->entityManager->flush();
