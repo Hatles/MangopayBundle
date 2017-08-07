@@ -89,7 +89,7 @@ class PaymentDirectHelper
      * @return PayIn
      */
     public function executeTransaction(
-        UserNaturalInterface $author,
+        UserInterface $author,
         WalletInterface $wallet,
         CardRegistration $cardRegistration,
         $amount,
