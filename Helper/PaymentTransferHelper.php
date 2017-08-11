@@ -62,6 +62,7 @@ class PaymentTransferHelper
         $mangoTransfer->Fees = $fees;
         $mangoTransfer->DebitedWalletId = $debitedWallet->getMangoWalletId();
         $mangoTransfer->CreditedWalletId = $creditedWallet->getMangoWalletId();
+        $mangoTransfer->Tag = $transfer->getTag();
 
         $mangoTransfer =  $this->mangopayHelper->Transfers->Create($mangoTransfer);
 

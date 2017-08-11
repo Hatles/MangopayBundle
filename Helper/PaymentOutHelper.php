@@ -73,7 +73,7 @@ class PaymentOutHelper
      * @param string $fees
      * @return PayOut
      */
-    public function createPayOutForUser(BankInformationInterface $bankInformation, WalletInterface $wallet, $debitedFunds, $fees = '0')
+    public function createPayOutForUser(BankInformationInterface $bankInformation, WalletInterface $wallet, $debitedFunds, $fees = '0', $tag = '')
     {
         $currency = $wallet->getCurrencyCode();
 
@@ -89,13 +89,20 @@ class PaymentOutHelper
         $payOut->DebitedFunds = $debitedFunds;
         $payOut->MeanOfPaymentDetails = $meanOfPaymentDetails;
         $payOut->Fees = $fees;
+        $payOut->Tag = $tag;
 
         return $this->mangopayHelper->PayOuts->Create($payOut);
     }
 
     public function createPayOut(TransactionInterface $transaction)
     {
-        $payOut = $this->createPayOutForUser($transaction->getCreditedAccount(), $transaction->getDebitedWallet(), $transaction->getDebitedFunds(), $transaction->getFees());
+        $payOut = $this->createPayOutForUser(
+            $transaction->getCreditedAccount(),
+            $transaction->getDebitedWallet(),
+            $transaction->getDebitedFunds(),
+            $transaction->getFees(),
+            $transaction->getTag()
+        );
 
         $transaction->setMangoTransactionId($payOut->Id);
 

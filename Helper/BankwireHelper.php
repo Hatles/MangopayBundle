@@ -105,11 +105,12 @@ class BankwireHelper
      * @param WalletInterface $wallet
      * @param $amount
      * @param int $feesAmount
+     * @param string $tag
      * @param null $creditedUserId
      * @return Transaction
      * @throws MangopayPayInCreationException
      */
-    public function bankwireToWallet(WalletInterface $wallet, $amount, $feesAmount = 0, $creditedUserId = null)
+    public function bankwireToWallet(WalletInterface $wallet, $amount, $feesAmount = 0, $tag = '',  $creditedUserId = null)
     {
         $mangoUser = $this->userHelper->findOrCreateMangoUser($wallet->getUser());
         $mangoWallet = $this->walletHelper->findOrCreateWallet($wallet);
@@ -130,6 +131,7 @@ class BankwireHelper
         $paymentDetails->DeclaredFees = $fees;
         $payin->PaymentDetails = $paymentDetails;
         $payin->AuthorId = $mangoUser->Id;
+        $payin->Tag = $tag;
         if ($creditedUserId !== null)
         {
             $payin->CreditedUserId = $creditedUserId;
@@ -155,7 +157,12 @@ class BankwireHelper
 
     public function createBankWirePayIn(TransactionInterface $transaction)
     {
-        $bankWire = $this->bankwireToWallet($transaction->getCreditedWallet(), $transaction->getDebitedFunds(), $transaction->getFees());
+        $bankWire = $this->bankwireToWallet(
+            $transaction->getCreditedWallet(),
+            $transaction->getDebitedFunds(),
+            $transaction->getFees(),
+            $transaction->getTag()
+        );
 
         $transaction->setMangoTransactionId($bankWire->Id);
         $transaction->setStatus($bankWire->Status);
