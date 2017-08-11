@@ -131,7 +131,7 @@ services:
         class: "%troopers_mangopay.subscriber.class%"
         arguments: ['@troopers_mangopay.annotation_reader', '@troopers_mangopay.handler']
         tags:
-            - { name: doctrine.event_subscriber }
+            - { name: doctrine.event_subscriber, priority: -20}
 
     troopers_mangopay.exception_listener:
         class: Troopers\MangopayBundle\Listener\MangoPayExceptionListener
