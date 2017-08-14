@@ -13,9 +13,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
+use Troopers\MangopayBundle\Entity\UserInterface;
 use Troopers\MangopayBundle\Entity\UserNaturalInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
 use Troopers\MangopayBundle\Event\CardRegistrationEvent;
+use Troopers\MangopayBundle\Event\TransactionEvent;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
 
 /**
@@ -152,6 +154,9 @@ class PaymentDirectHelper
         $payInTag = null
     )
     {
+        $event = new TransactionEvent($transaction);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::PRE_CREATE_TRANSACTION, $event);
+
         $currency = $transaction->getCreditedWallet()->getCurrencyCode();
 
         $debitedFunds = new Money();

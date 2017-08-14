@@ -7,9 +7,12 @@ use MangoPay\Money;
 use MangoPay\PayOut;
 use MangoPay\PayOutPaymentDetailsBankWire;
 use MangoPay\Transfer;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
+use Troopers\MangopayBundle\Event\TransactionEvent;
+use Troopers\MangopayBundle\TroopersMangopayEvents;
 
 /**
  * ref: troopers_mangopay.payment_transfer_helper.
@@ -26,19 +29,29 @@ class PaymentTransferHelper
      */
     private $walletHelper;
 
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
     /**
-     * PaymentOutHelper constructor.
-     * @param MangopayHelper $mangopayHelper
-     * @param EntityManager $entityManager
-     * @param WalletHelper $walletHelper
+     * @var EventDispatcherInterface
      */
-    public function __construct(MangopayHelper $mangopayHelper, EntityManager $entityManager, WalletHelper $walletHelper)
+    protected $dispatcher;
+
+    /**
+     * PaymentTransferHelper constructor.
+     * @param MangopayHelper $mangopayHelper
+     * @param WalletHelper $walletHelper
+     * @param EntityManager $entityManager
+     * @param EventDispatcherInterface $dispatcher
+     */
+    public function __construct(MangopayHelper $mangopayHelper, WalletHelper $walletHelper, EntityManager $entityManager, EventDispatcherInterface $dispatcher)
     {
         $this->mangopayHelper = $mangopayHelper;
-        $this->entityManager = $entityManager;
         $this->walletHelper = $walletHelper;
+        $this->entityManager = $entityManager;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -48,6 +61,9 @@ class PaymentTransferHelper
      */
     public function createTransfer(TransactionInterface $transfer, $needPersist = true)
     {
+        $event = new TransactionEvent($transfer);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::PRE_CREATE_TRANSACTION, $event);
+
         $debitedWallet = $transfer->getDebitedWallet();
         $creditedWallet = $transfer->getCreditedWallet();
         $currency = $debitedWallet->getCurrencyCode();

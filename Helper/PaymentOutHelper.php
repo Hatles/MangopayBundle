@@ -6,10 +6,13 @@ use Doctrine\ORM\EntityManager;
 use MangoPay\Money;
 use MangoPay\PayOut;
 use MangoPay\PayOutPaymentDetailsBankWire;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Troopers\MangopayBundle\Entity\BankInformationInterface;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
+use Troopers\MangopayBundle\Event\TransactionEvent;
+use Troopers\MangopayBundle\TroopersMangopayEvents;
 
 /**
  * ref: troopers_mangopay.payment_out_helper.
@@ -26,19 +29,29 @@ class PaymentOutHelper
      */
     private $walletHelper;
 
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $dispatcher;
 
     /**
      * PaymentOutHelper constructor.
      * @param MangopayHelper $mangopayHelper
-     * @param EntityManager $entityManager
      * @param WalletHelper $walletHelper
+     * @param EntityManager $entityManager
+     * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(MangopayHelper $mangopayHelper, EntityManager $entityManager, WalletHelper $walletHelper)
+    public function __construct(MangopayHelper $mangopayHelper, WalletHelper $walletHelper, EntityManager $entityManager, EventDispatcherInterface $dispatcher)
     {
         $this->mangopayHelper = $mangopayHelper;
-        $this->entityManager = $entityManager;
         $this->walletHelper = $walletHelper;
+        $this->entityManager = $entityManager;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -96,6 +109,9 @@ class PaymentOutHelper
 
     public function createPayOut(TransactionInterface $transaction)
     {
+        $event = new TransactionEvent($transaction);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::PRE_CREATE_TRANSACTION, $event);
+
         $payOut = $this->createPayOutForUser(
             $transaction->getCreditedAccount(),
             $transaction->getDebitedWallet(),

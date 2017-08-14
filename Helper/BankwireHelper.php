@@ -14,6 +14,7 @@ use Symfony\Component\Translation\DataCollectorTranslator;
 use Troopers\MangopayBundle\Entity\TransactionInterface;
 use Troopers\MangopayBundle\Entity\WalletInterface;
 use Troopers\MangopayBundle\Event\PayInEvent;
+use Troopers\MangopayBundle\Event\TransactionEvent;
 use Troopers\MangopayBundle\Exception\MangopayPayInCreationException;
 use Troopers\MangopayBundle\TroopersMangopayEvents;
 
@@ -44,6 +45,9 @@ class BankwireHelper
      */
     protected $translator;
 
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
     /**
@@ -157,6 +161,9 @@ class BankwireHelper
 
     public function createBankWirePayIn(TransactionInterface $transaction)
     {
+        $event = new TransactionEvent($transaction);
+        $this->dispatcher->dispatch(TroopersMangopayEvents::PRE_CREATE_TRANSACTION, $event);
+
         $bankWire = $this->bankwireToWallet(
             $transaction->getCreditedWallet(),
             $transaction->getDebitedFunds(),

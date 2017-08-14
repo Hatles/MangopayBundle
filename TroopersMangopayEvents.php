@@ -102,7 +102,7 @@ final class TroopersMangopayEvents
     /**
      * The NEW_BANK_WIRE_PAY_IN event occurs when a bankwire payin is created.
      */
-    const NEW_BANK_WIRE_PAY_IN = 'troopers_mangopay.ban_wire_pay_in.new';
+    const NEW_BANK_WIRE_PAY_IN = 'troopers_mangopay.bank_wire_pay_in.new';
 
     /**
      * The ERROR_PAY_IN event occurs when a payin is errored.
@@ -112,5 +112,12 @@ final class TroopersMangopayEvents
     /**
      * The ERROR_BANK_WIRE_PAY_IN event occurs when a bankwire payin is errored.
      */
-    const ERROR_BANK_WIRE_PAY_IN = 'troopers_mangopay.ban_wire_pay_in.error';
+    const ERROR_BANK_WIRE_PAY_IN = 'troopers_mangopay.bank_wire_pay_in.error';
+
+    /**
+     * The PRE_CREATE_TRANSACTION event occurs when a transaction is being created.
+     */
+    const PRE_CREATE_TRANSACTION = 'troopers_mangopay.transaction.pre_create';
+
+
 }
