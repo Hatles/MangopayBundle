@@ -28,9 +28,10 @@ abstract class KycDocument implements KycDocumentInterface
 
     /**
      * @var string
-     * @Assert\NotBlank(message="This document type is invalid")
-     * @Assert\Choice(callback="getTypes")
+     * @Assert\NotBlank(message="Kyc Document Type shoundnt be empty")
+     * @Assert\Choice(callback="getTypes", message="This is not a valid document type.")
      * @MangoPayField()
+     * @ORM\Column(name="type", type="string", length=255)
      */
     protected $type;
 
@@ -60,7 +61,13 @@ abstract class KycDocument implements KycDocumentInterface
 
     public static function getTypes()
     {
-        return array(self::TYPE_ADDRESS_PROOF, self::TYPE_ARTICLES_OF_ASSOCIATION, self::TYPE_IDENTITY_PROOF, self::TYPE_REGISTRATION_PROOF, self::TYPE_SHAREHOLDER_DECLARATION);
+        return array(
+            self::TYPE_ADDRESS_PROOF,
+            self::TYPE_ARTICLES_OF_ASSOCIATION,
+            self::TYPE_IDENTITY_PROOF,
+            self::TYPE_REGISTRATION_PROOF,
+            self::TYPE_SHAREHOLDER_DECLARATION
+        );
     }
 
     /**
