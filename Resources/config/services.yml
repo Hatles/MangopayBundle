@@ -97,8 +97,8 @@ services:
         class: "%troopers_mangopay.payment_out_helper.class%"
         arguments:
             - "@troopers_mangopay.mango_api"
-            - '@doctrine.orm.entity_manager'
             - "@troopers_mangopay.wallet_helper"
+            - '@doctrine.orm.entity_manager'
             - '@event_dispatcher'
 
     troopers_mangopay.transaction_helper:
